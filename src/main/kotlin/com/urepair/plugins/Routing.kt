@@ -14,5 +14,6 @@ fun Application.configureRouting() {
         getIssueRoute()
         addIssueRoute()
         removeIssueRoute()
+        equipmentQrCode()
     }
 }

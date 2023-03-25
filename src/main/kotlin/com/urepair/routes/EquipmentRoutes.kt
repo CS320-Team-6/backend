@@ -2,11 +2,18 @@ package com.urepair.routes
 
 import com.urepair.dao.dao
 import com.urepair.models.Equipment
+import io.github.g0dkar.qrcode.QRCode
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 
 fun Route.listEquipmentRoute() {
@@ -54,5 +61,34 @@ fun Route.removeEquipmentRoute() {
         } else {
             call.respondText("Not Found", status = HttpStatusCode.NotFound)
         }
+    }
+}
+
+fun Route.equipmentQrCode() {
+    static("/qr") {
+        files("images/qr")
+    }
+    get("/equipment/qr/{id?}") {
+        val id = call.parameters["id"] ?: return@get call.respondText(
+            "Missing id",
+            status = HttpStatusCode.BadRequest
+        )
+        dao.equipment(id.toInt()) ?: return@get call.respondText(
+            "No equipment with id $id",
+            status = HttpStatusCode.NotFound
+        )
+        val fileName = "images/qr/$id.png"
+        val file = File(fileName)
+        if(!file.exists()) {
+            withContext(Dispatchers.IO) {
+                file.parentFile.mkdirs()
+                FileOutputStream(fileName).use {
+                    QRCode("/equipment/$id")
+                        .render()
+                        .writeImage(it)
+                }
+            }
+        }
+        call.respondRedirect("/qr/$id.png")
     }
 }
