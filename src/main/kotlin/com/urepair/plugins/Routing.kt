@@ -10,10 +10,16 @@ fun Application.configureRouting() {
         getEquipmentRoute()
         addEquipmentRoute()
         removeEquipmentRoute()
+        equipmentQrCode()
+
         listIssuesRoute()
         getIssueRoute()
         addIssueRoute()
         removeIssueRoute()
-        equipmentQrCode()
+
+        listUsersRoute()
+        getUserRoute()
+        addUserRoute()
+        removeUserRoute()
     }
 }

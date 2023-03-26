@@ -1,5 +1,6 @@
 package com.urepair.models
 
+import com.urepair.models.IssueTable.references
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.*
@@ -30,7 +31,7 @@ object IssueTable : Table() {
     val status = varchar("status", 255)
     val dateReported = datetime("date_reported")
     val priority = integer("priority")
-    val assignedTo = varchar("assignedTo", 255).nullable()
+    val assignedTo = varchar("assignedTo", 255).references(UserTable.email).nullable()
     val dateResolved = datetime("date_resolved").nullable()
     val resolutionDetails = varchar("resolutionDetails", 255).nullable()
     val notes = varchar("notes", 255).nullable()

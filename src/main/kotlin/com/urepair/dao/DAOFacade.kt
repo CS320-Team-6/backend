@@ -57,4 +57,19 @@ interface DAOFacade {
         notes: String?
     ): Boolean
     suspend fun deleteIssue(id: Int): Boolean
+
+    suspend fun allUsers(): List<User>
+    suspend fun user(id: Int): User?
+    suspend fun addNewUser(
+        name: String,
+        email: String,
+        role: String
+    ): User?
+    suspend fun editUser(
+        id: Int,
+        name: String,
+        email: String,
+        role: String,
+    ): Boolean
+    suspend fun deleteUser(id: Int): Boolean
 }

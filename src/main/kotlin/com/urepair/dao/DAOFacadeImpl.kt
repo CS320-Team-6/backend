@@ -1,10 +1,7 @@
 package com.urepair.dao
 
 import com.urepair.dao.DatabaseFactory.dbQuery
-import com.urepair.models.Equipment
-import com.urepair.models.EquipmentTable
-import com.urepair.models.Issue
-import com.urepair.models.IssueTable
+import com.urepair.models.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.*
 import org.jetbrains.exposed.sql.*
@@ -35,6 +32,13 @@ class DAOFacadeImpl : DAOFacade {
         dateResolved = row[IssueTable.dateResolved]?.toKotlinLocalDateTime(),
         resolutionDetails = row[IssueTable.resolutionDetails],
         notes = row[IssueTable.notes],
+    )
+
+    private fun resultRowToUser(row: ResultRow) = User(
+        id = row[UserTable.id],
+        name = row[UserTable.name],
+        email = row[UserTable.email],
+        role = row[UserTable.role],
     )
     private fun setEquipmentValues(
         it: UpdateBuilder<*>,
@@ -78,6 +82,16 @@ class DAOFacadeImpl : DAOFacade {
         it[IssueTable.dateResolved] = dateResolved?.toJavaLocalDateTime()
         it[IssueTable.resolutionDetails] = resolutionDetails
         it[IssueTable.notes] = notes
+    }
+    private fun setUserValues(
+        it: UpdateBuilder<*>,
+        name: String,
+        email: String,
+        role: String,
+    ) {
+        it[UserTable.name] = name
+        it[UserTable.email] = email
+        it[UserTable.role] = role
     }
     override suspend fun allEquipment(): List<Equipment> = dbQuery {
         EquipmentTable.selectAll().map(::resultRowToEquipment)
@@ -175,6 +189,34 @@ class DAOFacadeImpl : DAOFacade {
     override suspend fun deleteIssue(id: Int): Boolean = dbQuery {
         IssueTable.deleteWhere { IssueTable.id eq id } > 0
     }
+
+    override suspend fun allUsers(): List<User> = dbQuery {
+        UserTable.selectAll().map(::resultRowToUser)
+    }
+
+    override suspend fun user(id: Int): User?  = dbQuery {
+        UserTable
+            .select { UserTable.id eq id}
+            .map(::resultRowToUser)
+            .singleOrNull()
+    }
+
+    override suspend fun addNewUser(name: String, email: String, role: String): User? = dbQuery {
+        val insertStatement = UserTable.insert {
+            setUserValues(it, name, email, role)
+        }
+        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToUser)
+    }
+
+    override suspend fun editUser(id: Int, name: String, email: String, role: String): Boolean = dbQuery {
+        UserTable.update({UserTable.id eq id}) {
+            setUserValues(it, name, email, role)
+        } > 0
+    }
+
+    override suspend fun deleteUser(id: Int): Boolean = dbQuery {
+        UserTable.deleteWhere { UserTable.id eq id } > 0
+    }
 }
 
 val dao: DAOFacade = DAOFacadeImpl().apply {
@@ -182,8 +224,11 @@ val dao: DAOFacade = DAOFacadeImpl().apply {
         if(allEquipment().isEmpty()) {
             addNewEquipment("name", "type", "man", "model", "serial", "loc", LocalDate(2023, 3, 19), LocalDate(2023, 3, 20))
         }
+        if(allUsers().isEmpty()) {
+            addNewUser("john", "jwordell@umass.edu", "overlord")
+        }
         if(allIssues().isEmpty()) {
-            addNewIssue(1, "awaiting assignment", LocalDateTime(2023, 3, 5, 2, 15), 3, null, null, null, null, null)
+            addNewIssue(1, "awaiting assignment", LocalDateTime(2023, 3, 5, 2, 15), 3, null, "jwordell@umass.edu", null, null, null)
         }
     }
 }

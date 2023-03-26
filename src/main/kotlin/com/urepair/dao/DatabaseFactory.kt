@@ -22,9 +22,8 @@ object DatabaseFactory {
         val database = Database.connect(jdbcURL, driverClassName)
         transaction(database) {
             SchemaUtils.create(EquipmentTable)
-        }
-        transaction(database) {
             SchemaUtils.create(IssueTable)
+            SchemaUtils.create(UserTable)
         }
     }
     suspend fun <T> dbQuery(block: suspend () -> T): T =
