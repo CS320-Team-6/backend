@@ -42,7 +42,7 @@ fun main() {
             keyAlias = keyAlias,
             keyStorePassword = { keyStorePassword.toCharArray() },
             privateKeyPassword = { privateKeyPassword.toCharArray() }) {
-            port = 8443
+            port = (System.getenv("PORT")?:"5000").toInt()
             keyStorePath = keyStoreFile
         }
         module(Application::module)
