@@ -1,7 +1,6 @@
 package com.urepair.routes
 
 import com.urepair.dao.dao
-import com.urepair.models.Issue
 import com.urepair.models.User
 import io.ktor.http.*
 import io.ktor.server.application.*
