@@ -1,6 +1,5 @@
 package com.urepair.models
 
-import com.urepair.models.IssueTable.references
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.*
