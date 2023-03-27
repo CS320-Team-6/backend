@@ -91,7 +91,7 @@ fun Route.equipmentQrCode() {
                 withContext(Dispatchers.IO) {
                     file.parentFile.mkdirs()
                     FileOutputStream(fileName).use {
-                        QRCode("urepair-env.eba-etqi9uyt.us-east-2.elasticbeanstalk.com/equipment/$id")
+                        QRCode("urepairtestjohn2-env.eba-xvpqbsrn.us-east-2.elasticbeanstalk.com/equipment/$id")
                             .render()
                             .writeImage(it)
                     }
