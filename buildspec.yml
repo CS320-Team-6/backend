@@ -9,8 +9,8 @@ phases:
       - ./gradlew build
   post_build:
     commands:
-      - cp build/libs/*.jar app.jar
+      - cp build/libs/*.jar .
 artifacts:
   files:
-    - app.jar
+    - backend-0.0.1.jar
     - Procfile
