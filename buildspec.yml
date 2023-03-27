@@ -4,13 +4,19 @@ phases:
   install:
     runtime-versions:
       java: corretto11
+  pre_build:
+    commands:
+      - echo "Building Ktor project"
+      - ./gradlew clean
   build:
     commands:
       - ./gradlew build
   post_build:
     commands:
-      - cp build/libs/*.jar .
+      - echo "Copying build artifacts to S3"
+      - aws s3 cp build/libs/backend-0.0.1.jar s3://urepair-test-john2-pipeline/
+
 artifacts:
   files:
-    - backend-0.0.1.jar
-    - Procfile
+    - build/libs/backend-0.0.1.jar
+  discard-paths: yes
