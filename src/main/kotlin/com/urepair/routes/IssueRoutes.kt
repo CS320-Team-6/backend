@@ -17,38 +17,35 @@ fun Route.listIssuesRoute() {
     }
 }
 fun Route.getIssueRoute() {
-    authenticate("auth-basic") {
-        get("/issue/{id?}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing id",
-                status = HttpStatusCode.BadRequest
-            )
-            val equip = dao.issue(id.toInt()) ?: return@get call.respondText(
-                "No issue with id $id",
-                status = HttpStatusCode.NotFound
-            )
-            call.respond(equip)
-        }
+   // remove authentication for now
+    get("/issue/{id?}") {
+        val id = call.parameters["id"] ?: return@get call.respondText(
+            "Missing id",
+            status = HttpStatusCode.BadRequest
+        )
+        val equip = dao.issue(id.toInt()) ?: return@get call.respondText(
+            "No issue with id $id",
+            status = HttpStatusCode.NotFound
+        )
+        call.respond(equip)
     }
 }
 
 fun Route.addIssueRoute() {
-    authenticate("auth-basic") {
-        post("/issue") {
-            val issue = call.receive<Issue>()
-            dao.addNewIssue(
-                equipmentId = issue.equipmentId,
-                description = issue.description,
-                status = issue.status,
-                dateReported = issue.dateReported,
-                priority = issue.priority,
-                assignedTo = issue.assignedTo,
-                dateResolved = issue.dateResolved,
-                resolutionDetails = issue.resolutionDetails,
-                notes = issue.notes,
-            )
-            call.respondText("Equipment stored correctly", status = HttpStatusCode.Created)
-        }
+    post("/issue") {
+        val issue = call.receive<Issue>()
+        dao.addNewIssue(
+            equipmentId = issue.equipmentId,
+            description = issue.description,
+            status = issue.status,
+            dateReported = issue.dateReported,
+            priority = issue.priority,
+            assignedTo = issue.assignedTo,
+            dateResolved = issue.dateResolved,
+            resolutionDetails = issue.resolutionDetails,
+            notes = issue.notes,
+        )
+        call.respondText("Equipment stored correctly", status = HttpStatusCode.Created)
     }
 }
 
