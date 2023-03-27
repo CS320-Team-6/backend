@@ -24,18 +24,16 @@ fun Route.listEquipmentRoute() {
 }
 
 fun Route.getEquipmentRoute() {
-    authenticate("auth-basic") {
-        get("/equipment/{id?}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing id",
-                status = HttpStatusCode.BadRequest
-            )
-            val equip = dao.equipment(id.toInt()) ?: return@get call.respondText(
-                "No equipment with id $id",
-                status = HttpStatusCode.NotFound
-            )
-            call.respond(equip)
-        }
+    get("/equipment/{id?}") {
+        val id = call.parameters["id"] ?: return@get call.respondText(
+            "Missing id",
+            status = HttpStatusCode.BadRequest
+        )
+        val equip = dao.equipment(id.toInt()) ?: return@get call.respondText(
+            "No equipment with id $id",
+            status = HttpStatusCode.NotFound
+        )
+        call.respond(equip)
     }
 }
 
