@@ -10,13 +10,13 @@ phases:
       - ./gradlew clean
   build:
     commands:
-      - ./gradlew build
+      - ./gradlew buildFatJar
   post_build:
     commands:
       - echo "Copying build artifacts to S3"
-      - aws s3 cp build/libs/backend-0.0.1.jar s3://urepair-test-john2-pipeline/
+      - aws s3 cp build/libs/backend-all.jar s3://urepair-test-john2-pipeline/
 
 artifacts:
   files:
-    - build/libs/backend-0.0.1.jar
+    - build/libs/backend-all.jar
   discard-paths: yes
