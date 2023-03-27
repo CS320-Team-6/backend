@@ -5,24 +5,15 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import java.io.FileInputStream
 import java.util.*
 import kotlin.test.*
 
 class OrderRouteTests {
-//    private fun loadAuthenticationProperties(): Properties {
-//        val properties = Properties()
-//        val propertiesFile = FileInputStream("authentication.properties")
-//        properties.load(propertiesFile)
-//        propertiesFile.close()
-//        return properties
-//    }
     @Test
     fun testEquipment() = testApplication {
         //val authenticationProperties = loadAuthenticationProperties()
         val username = "team6"
         val password = "cs320Team6"
-
         val client = createClient {
             defaultRequest {
                 val credentials = Base64.getEncoder().encodeToString("$username:$password".toByteArray())

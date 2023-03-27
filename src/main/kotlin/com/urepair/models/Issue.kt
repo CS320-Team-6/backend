@@ -6,30 +6,45 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.datetime
 import kotlinx.datetime.serializers.LocalDateTimeComponentSerializer
 
-
 @Serializable
 data class Issue(
     val id: Int? = null, // Nullable
     val equipmentId: Int,
-    val description: String?,
-    val status: String,
+    val status: Status,
     @Serializable(with = LocalDateTimeComponentSerializer::class)
     val dateReported: LocalDateTime,
-    val priority: Int,
+    val priority: Priority,
+    val description: String?,
     val assignedTo: String?,
     @Serializable(with = LocalDateTimeComponentSerializer::class)
     val dateResolved: LocalDateTime?,
     val resolutionDetails: String?,
     val notes: String?
-)
-
+) { enum class Priority {
+        LOW,
+        MEDIUM,
+        HIGH,
+        URGENT
+    }
+    enum class Status {
+        NEW,
+        IN_PROGRESS,
+        RESOLVED,
+        CLOSED
+    }
+    init {
+        if (assignedTo != null) {
+            require(assignedTo.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex())) { "Invalid email address" }
+        }
+    }
+}
 object IssueTable : Table() {
     val id = integer("id").autoIncrement()
     val equipmentId = integer("equipment_id") references EquipmentTable.id
-    val description = varchar("description", 255).nullable()
-    val status = varchar("status", 255)
+    val status = enumerationByName("status", 255, Issue.Status::class)
     val dateReported = datetime("date_reported")
-    val priority = integer("priority")
+    val priority = enumerationByName("priority", 255, Issue.Priority::class)
+    val description = varchar("description", 255).nullable()
     val assignedTo = varchar("assignedTo", 255).references(UserTable.email).nullable()
     val dateResolved = datetime("date_resolved").nullable()
     val resolutionDetails = varchar("resolutionDetails", 255).nullable()

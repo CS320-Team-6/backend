@@ -37,7 +37,8 @@ fun Route.addUserRoute() {
         post("/user") {
             val user = call.receive<User>()
             dao.addNewUser(
-                name = user.name,
+                firstName = user.firstName,
+                lastName = user.lastName,
                 email = user.email,
                 role = user.role,
             )

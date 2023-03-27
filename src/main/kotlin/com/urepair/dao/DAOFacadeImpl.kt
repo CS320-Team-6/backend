@@ -36,7 +36,8 @@ class DAOFacadeImpl : DAOFacade {
 
     private fun resultRowToUser(row: ResultRow) = User(
         id = row[UserTable.id],
-        name = row[UserTable.name],
+        firstName = row[UserTable.firstName],
+        lastName = row[UserTable.lastName],
         email = row[UserTable.email],
         role = row[UserTable.role],
     )
@@ -64,9 +65,9 @@ class DAOFacadeImpl : DAOFacade {
     private fun setIssueValues(
         it: UpdateBuilder<*>,
         equipmentId: Int,
-        status: String,
+        status: Issue.Status,
         dateReported: LocalDateTime,
-        priority: Int,
+        priority: Issue.Priority,
         description: String? = null,
         assignedTo: String? = null,
         dateResolved: LocalDateTime? = null,
@@ -85,11 +86,13 @@ class DAOFacadeImpl : DAOFacade {
     }
     private fun setUserValues(
         it: UpdateBuilder<*>,
-        name: String,
+        firstName: String,
+        lastName: String,
         email: String,
-        role: String,
+        role: User.Role,
     ) {
-        it[UserTable.name] = name
+        it[UserTable.firstName] = firstName
+        it[UserTable.lastName] = lastName
         it[UserTable.email] = email
         it[UserTable.role] = role
     }
@@ -154,9 +157,9 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun addNewIssue(
         equipmentId: Int,
-        status: String,
+        status: Issue.Status,
         dateReported: LocalDateTime,
-        priority: Int,
+        priority: Issue.Priority,
         description: String?,
         assignedTo: String?,
         dateResolved: LocalDateTime?,
@@ -172,9 +175,9 @@ class DAOFacadeImpl : DAOFacade {
     override suspend fun editIssue(
         id: Int,
         equipmentId: Int,
-        status: String,
+        status: Issue.Status,
         dateReported: LocalDateTime,
-        priority: Int,
+        priority: Issue.Priority,
         description: String?,
         assignedTo: String?,
         dateResolved: LocalDateTime?,
@@ -201,16 +204,16 @@ class DAOFacadeImpl : DAOFacade {
             .singleOrNull()
     }
 
-    override suspend fun addNewUser(name: String, email: String, role: String): User? = dbQuery {
+    override suspend fun addNewUser(firstName: String, lastName: String, email: String, role: User.Role): User? = dbQuery {
         val insertStatement = UserTable.insert {
-            setUserValues(it, name, email, role)
+            setUserValues(it, firstName, lastName, email, role)
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToUser)
     }
 
-    override suspend fun editUser(id: Int, name: String, email: String, role: String): Boolean = dbQuery {
+    override suspend fun editUser(id: Int, firstName: String, lastName: String, email: String, role: User.Role): Boolean = dbQuery {
         UserTable.update({UserTable.id eq id}) {
-            setUserValues(it, name, email, role)
+            setUserValues(it, firstName, lastName, email, role)
         } > 0
     }
 
@@ -225,10 +228,10 @@ val dao: DAOFacade = DAOFacadeImpl().apply {
             addNewEquipment("name", "type", "man", "model", "serial", "loc", LocalDate(2023, 3, 19), LocalDate(2023, 3, 20))
         }
         if(allUsers().isEmpty()) {
-            addNewUser("john", "jwordell@umass.edu", "overlord")
+            addNewUser("john", "wordell", "jwordell@umass.edu", User.Role.valueOf("STUDENT"))
         }
         if(allIssues().isEmpty()) {
-            addNewIssue(1, "awaiting assignment", LocalDateTime(2023, 3, 5, 2, 15), 3, null, "jwordell@umass.edu", null, null, null)
+            addNewIssue(1, Issue.Status.valueOf("NEW"), LocalDateTime(2023, 3, 5, 2, 15), Issue.Priority.valueOf("LOW"), null, "jwordell@umass.edu", null, null, null)
         }
     }
 }

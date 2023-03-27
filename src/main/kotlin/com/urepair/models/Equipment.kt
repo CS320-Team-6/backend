@@ -6,7 +6,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.date
 import kotlinx.datetime.serializers.LocalDateComponentSerializer
 
-
 @Serializable
 data class Equipment(
     val id: Int? = null, // Nullable
@@ -19,7 +18,7 @@ data class Equipment(
     @Serializable(with = LocalDateComponentSerializer::class)
     val dateInstalled: LocalDate,
     @Serializable(with = LocalDateComponentSerializer::class)
-    val lastMaintenanceDate: LocalDate? = null // Nullable, same as above
+    val lastMaintenanceDate: LocalDate? = null
 )
 
 object EquipmentTable : Table() {

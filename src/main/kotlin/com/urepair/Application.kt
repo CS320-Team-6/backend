@@ -6,13 +6,6 @@ import com.urepair.plugins.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.cors.routing.*
 
-//fun loadProperties(fileName: String): Properties {
-//    val properties = Properties()
-//    val propertiesFile = FileInputStream(fileName)
-//    properties.load(propertiesFile)
-//    propertiesFile.close()
-//    return properties
-//}
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
     install(CORS) {

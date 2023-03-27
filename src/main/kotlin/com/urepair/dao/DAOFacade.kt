@@ -35,9 +35,9 @@ interface DAOFacade {
     suspend fun issue(id: Int): Issue?
     suspend fun addNewIssue(
         equipmentId: Int,
-        status: String,
+        status: Issue.Status,
         dateReported: LocalDateTime,
-        priority: Int,
+        priority: Issue.Priority,
         description: String?,
         assignedTo: String?,
         dateResolved: LocalDateTime?,
@@ -47,9 +47,9 @@ interface DAOFacade {
     suspend fun editIssue(
         id: Int,
         equipmentId: Int,
-        status: String,
+        status: Issue.Status,
         dateReported: LocalDateTime,
-        priority: Int,
+        priority: Issue.Priority,
         description: String?,
         assignedTo: String?,
         dateResolved: LocalDateTime?,
@@ -61,15 +61,17 @@ interface DAOFacade {
     suspend fun allUsers(): List<User>
     suspend fun user(id: Int): User?
     suspend fun addNewUser(
-        name: String,
+        firstName: String,
+        lastName: String,
         email: String,
-        role: String
+        role: User.Role
     ): User?
     suspend fun editUser(
         id: Int,
-        name: String,
+        firstName: String,
+        lastName: String,
         email: String,
-        role: String,
+        role: User.Role,
     ): Boolean
     suspend fun deleteUser(id: Int): Boolean
 }
