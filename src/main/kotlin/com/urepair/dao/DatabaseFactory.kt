@@ -9,19 +9,13 @@ import org.jetbrains.exposed.sql.transactions.experimental.*
 object DatabaseFactory {
     fun init() {
         // uncomment this section and edit dbconfig.properties to switch from local to amazon rds
-        // val rdsEndpoint = "rdsEndpoint"
-        // val rdsPort = "rdsPort"
-        // val dbName = "dbName"
-        // val username = "username"
-        // val password = "password"
-        // val driverClassName = "org.postgresql.Driver"
-        // val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/$dbName"
-        // val database = Database.connect(jdbcUrl, driverClassName, user = username, password = password)
-
-        // comment this block when using rds
-        val driverClassName = "org.h2.Driver"
-        val jdbcURL = "jdbc:h2:file:./build/db"
-        val database = Database.connect(jdbcURL, driverClassName)
+         val rdsEndpoint = "database-1.cd9hpkls9dip.us-east-2.rds.amazonaws.com"
+         val rdsPort = 5432
+         val username = "postgres"
+         val password = "eTzE2QnrRg4NdnKy9l9O"
+         val driverClassName = "org.postgresql.Driver"
+         val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/"
+         val database = Database.connect(jdbcUrl, driverClassName, user = username, password = password)
 
         transaction(database) {
             SchemaUtils.create(EquipmentTable)

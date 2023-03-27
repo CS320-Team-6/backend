@@ -5,6 +5,7 @@ val exposedVersion: String by project
 val h2Version: String by project
 val kotlinxVersion: String by project
 val qrVersion: String by project
+val postgresqlVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.8.10"
@@ -37,7 +38,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
-    implementation("com.h2database:h2:$h2Version")
+    implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.github.g0dkar:qrcode-kotlin-jvm:$qrVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
