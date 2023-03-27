@@ -18,11 +18,9 @@ import java.io.FileOutputStream
 
 
 fun Route.listEquipmentRoute() {
-    authenticate("auth-basic") {
         get("/equipment") {
             call.respond(mapOf("equipment_table" to dao.allEquipment()))
         }
-    }
 }
 
 fun Route.getEquipmentRoute() {
@@ -93,7 +91,7 @@ fun Route.equipmentQrCode() {
                 withContext(Dispatchers.IO) {
                     file.parentFile.mkdirs()
                     FileOutputStream(fileName).use {
-                        QRCode("/equipment/$id")
+                        QRCode("urepair-env.eba-etqi9uyt.us-east-2.elasticbeanstalk.com/equipment/$id")
                             .render()
                             .writeImage(it)
                     }
