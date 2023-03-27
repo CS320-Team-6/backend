@@ -10,18 +10,18 @@ import java.util.*
 import kotlin.test.*
 
 class OrderRouteTests {
-    private fun loadAuthenticationProperties(): Properties {
-        val properties = Properties()
-        val propertiesFile = FileInputStream("authentication.properties")
-        properties.load(propertiesFile)
-        propertiesFile.close()
-        return properties
-    }
+//    private fun loadAuthenticationProperties(): Properties {
+//        val properties = Properties()
+//        val propertiesFile = FileInputStream("authentication.properties")
+//        properties.load(propertiesFile)
+//        propertiesFile.close()
+//        return properties
+//    }
     @Test
     fun testEquipment() = testApplication {
-        val authenticationProperties = loadAuthenticationProperties()
-        val username = authenticationProperties.getProperty("username")
-        val password = authenticationProperties.getProperty("password")
+        //val authenticationProperties = loadAuthenticationProperties()
+        val username = "team6"
+        val password = "cs320Team6"
 
         val client = createClient {
             defaultRequest {
