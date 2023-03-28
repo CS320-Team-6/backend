@@ -11,11 +11,6 @@ phases:
   build:
     commands:
       - ./gradlew buildFatJar
-  post_build:
-    commands:
-      - echo "Copying build artifacts to S3"
-      - aws s3 cp build/libs/backend-all.jar s3://urepair-test-john2-pipeline/
-
 artifacts:
   files:
     - build/libs/backend-all.jar

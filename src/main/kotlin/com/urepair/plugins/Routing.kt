@@ -8,7 +8,7 @@ import io.ktor.server.response.*
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.respondText("Hello, pipline build, again!")
+            call.respondText("Welcome to urepair!\n To get started, try navigating to /equipment")
         }
         listEquipmentRoute()
         getEquipmentRoute()
