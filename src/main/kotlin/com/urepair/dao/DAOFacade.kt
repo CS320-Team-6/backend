@@ -1,7 +1,8 @@
 package com.urepair.dao
 
-
-import com.urepair.models.*
+import com.urepair.models.Equipment
+import com.urepair.models.Issue
+import com.urepair.models.User
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
@@ -42,7 +43,7 @@ interface DAOFacade {
         assignedTo: String?,
         dateResolved: LocalDateTime?,
         resolutionDetails: String?,
-        notes: String?
+        notes: String?,
     ): Issue?
     suspend fun editIssue(
         id: Int,
@@ -54,7 +55,7 @@ interface DAOFacade {
         assignedTo: String?,
         dateResolved: LocalDateTime?,
         resolutionDetails: String?,
-        notes: String?
+        notes: String?,
     ): Boolean
     suspend fun deleteIssue(id: Int): Boolean
 
@@ -64,7 +65,7 @@ interface DAOFacade {
         firstName: String,
         lastName: String,
         email: String,
-        role: User.Role
+        role: User.Role,
     ): User?
     suspend fun editUser(
         id: Int,

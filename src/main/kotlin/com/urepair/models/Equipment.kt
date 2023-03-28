@@ -1,10 +1,10 @@
 package com.urepair.models
 
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.javatime.date
 import kotlinx.datetime.serializers.LocalDateComponentSerializer
+import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.date
 
 @Serializable
 data class Equipment(
@@ -18,7 +18,7 @@ data class Equipment(
     @Serializable(with = LocalDateComponentSerializer::class)
     val dateInstalled: LocalDate,
     @Serializable(with = LocalDateComponentSerializer::class)
-    val lastMaintenanceDate: LocalDate? = null
+    val lastMaintenanceDate: LocalDate? = null,
 )
 
 object EquipmentTable : Table() {

@@ -21,11 +21,11 @@ fun Route.getUserRoute() {
         get("/user/{id?}") {
             val id = call.parameters["id"] ?: return@get call.respondText(
                 "Missing id",
-                status = HttpStatusCode.BadRequest
+                status = HttpStatusCode.BadRequest,
             )
             val user = dao.user(id.toInt()) ?: return@get call.respondText(
                 "No user with id $id",
-                status = HttpStatusCode.NotFound
+                status = HttpStatusCode.NotFound,
             )
             call.respond(user)
         }

@@ -1,17 +1,19 @@
 package com.urepair
 
-import io.ktor.client.plugins.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
-import io.ktor.server.testing.*
-import java.util.*
-import kotlin.test.*
+import io.ktor.server.testing.testApplication
+import java.util.Base64
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-class OrderRouteTests {
+class EquipmentRouteTests {
     @Test
     fun testEquipment() = testApplication {
-        //val authenticationProperties = loadAuthenticationProperties()
+        // val authenticationProperties = loadAuthenticationProperties()
         val username = "team6"
         val password = "cs320Team6"
         val client = createClient {
@@ -42,7 +44,7 @@ class OrderRouteTests {
         "day": 20
     }
 }""",
-            response.bodyAsText()
+            response.bodyAsText(),
         )
         assertEquals(HttpStatusCode.OK, response.status)
     }

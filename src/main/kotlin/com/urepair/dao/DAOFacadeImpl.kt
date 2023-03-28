@@ -1,13 +1,27 @@
 package com.urepair.dao
 
 import com.urepair.dao.DatabaseFactory.dbQuery
-import com.urepair.models.*
+import com.urepair.models.Equipment
+import com.urepair.models.EquipmentTable
+import com.urepair.models.Issue
+import com.urepair.models.IssueTable
+import com.urepair.models.User
+import com.urepair.models.UserTable
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.*
-import org.jetbrains.exposed.sql.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDate
+import kotlinx.datetime.toKotlinLocalDateTime
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
-
+import org.jetbrains.exposed.sql.update
 
 class DAOFacadeImpl : DAOFacade {
     private fun resultRowToEquipment(row: ResultRow) = Equipment(
@@ -50,7 +64,7 @@ class DAOFacadeImpl : DAOFacade {
         serialNumber: String,
         location: String,
         dateInstalled: LocalDate,
-        lastMaintenanceDate: LocalDate? = null
+        lastMaintenanceDate: LocalDate? = null,
     ) {
         it[EquipmentTable.name] = name
         it[EquipmentTable.equipmentType] = equipmentType
@@ -72,7 +86,7 @@ class DAOFacadeImpl : DAOFacade {
         assignedTo: String? = null,
         dateResolved: LocalDateTime? = null,
         resolutionDetails: String? = null,
-        notes: String? = null
+        notes: String? = null,
     ) {
         it[IssueTable.equipmentId] = equipmentId
         it[IssueTable.status] = status
@@ -102,7 +116,7 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun equipment(id: Int): Equipment? = dbQuery {
         EquipmentTable
-            .select { EquipmentTable.id eq id}
+            .select { EquipmentTable.id eq id }
             .map(::resultRowToEquipment)
             .singleOrNull()
     }
@@ -115,7 +129,7 @@ class DAOFacadeImpl : DAOFacade {
         serialNumber: String,
         location: String,
         dateInstalled: LocalDate,
-        lastMaintenanceDate: LocalDate?
+        lastMaintenanceDate: LocalDate?,
     ): Equipment? = dbQuery {
         val insertStatement = EquipmentTable.insert {
             setEquipmentValues(it, name, equipmentType, manufacturer, model, serialNumber, location, dateInstalled, lastMaintenanceDate)
@@ -132,11 +146,10 @@ class DAOFacadeImpl : DAOFacade {
         serialNumber: String,
         location: String,
         dateInstalled: LocalDate,
-        lastMaintenanceDate: LocalDate?
+        lastMaintenanceDate: LocalDate?,
     ): Boolean = dbQuery {
-        EquipmentTable.update({EquipmentTable.id eq id}) {
+        EquipmentTable.update({ EquipmentTable.id eq id }) {
             setEquipmentValues(it, name, equipmentType, manufacturer, model, serialNumber, location, dateInstalled, lastMaintenanceDate)
-
         } > 0
     }
 
@@ -150,7 +163,7 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun issue(id: Int): Issue? = dbQuery {
         IssueTable
-            .select { IssueTable.id eq id}
+            .select { IssueTable.id eq id }
             .map(::resultRowToIssue)
             .singleOrNull()
     }
@@ -164,7 +177,7 @@ class DAOFacadeImpl : DAOFacade {
         assignedTo: String?,
         dateResolved: LocalDateTime?,
         resolutionDetails: String?,
-        notes: String?
+        notes: String?,
     ): Issue? = dbQuery {
         val insertStatement = IssueTable.insert {
             setIssueValues(it, equipmentId, status, dateReported, priority, description, assignedTo, dateResolved, resolutionDetails, notes)
@@ -182,9 +195,9 @@ class DAOFacadeImpl : DAOFacade {
         assignedTo: String?,
         dateResolved: LocalDateTime?,
         resolutionDetails: String?,
-        notes: String?
+        notes: String?,
     ): Boolean = dbQuery {
-        IssueTable.update({IssueTable.id eq id}) {
+        IssueTable.update({ IssueTable.id eq id }) {
             setIssueValues(it, equipmentId, status, dateReported, priority, description, assignedTo, dateResolved, resolutionDetails, notes)
         } > 0
     }
@@ -197,9 +210,9 @@ class DAOFacadeImpl : DAOFacade {
         UserTable.selectAll().map(::resultRowToUser)
     }
 
-    override suspend fun user(id: Int): User?  = dbQuery {
+    override suspend fun user(id: Int): User? = dbQuery {
         UserTable
-            .select { UserTable.id eq id}
+            .select { UserTable.id eq id }
             .map(::resultRowToUser)
             .singleOrNull()
     }
@@ -212,7 +225,7 @@ class DAOFacadeImpl : DAOFacade {
     }
 
     override suspend fun editUser(id: Int, firstName: String, lastName: String, email: String, role: User.Role): Boolean = dbQuery {
-        UserTable.update({UserTable.id eq id}) {
+        UserTable.update({ UserTable.id eq id }) {
             setUserValues(it, firstName, lastName, email, role)
         } > 0
     }
@@ -224,13 +237,13 @@ class DAOFacadeImpl : DAOFacade {
 
 val dao: DAOFacade = DAOFacadeImpl().apply {
     runBlocking {
-        if(allEquipment().isEmpty()) {
+        if (allEquipment().isEmpty()) {
             addNewEquipment("name", "type", "man", "model", "serial", "loc", LocalDate(2023, 3, 19), LocalDate(2023, 3, 20))
         }
-        if(allUsers().isEmpty()) {
+        if (allUsers().isEmpty()) {
             addNewUser("john", "wordell", "jwordell@umass.edu", User.Role.valueOf("STUDENT"))
         }
-        if(allIssues().isEmpty()) {
+        if (allIssues().isEmpty()) {
             addNewIssue(1, Issue.Status.valueOf("NEW"), LocalDateTime(2023, 3, 5, 2, 15), Issue.Priority.valueOf("LOW"), null, "jwordell@umass.edu", null, null, null)
         }
     }

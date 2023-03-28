@@ -17,15 +17,15 @@ fun Route.listIssuesRoute() {
     }
 }
 fun Route.getIssueRoute() {
-   // remove authentication for now
+    // remove authentication for now
     get("/issue/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respondText(
             "Missing id",
-            status = HttpStatusCode.BadRequest
+            status = HttpStatusCode.BadRequest,
         )
         val equip = dao.issue(id.toInt()) ?: return@get call.respondText(
             "No issue with id $id",
-            status = HttpStatusCode.NotFound
+            status = HttpStatusCode.NotFound,
         )
         call.respond(equip)
     }

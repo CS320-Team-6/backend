@@ -1,10 +1,11 @@
 package com.urepair
 
 import com.urepair.dao.DatabaseFactory
+import com.urepair.plugins.configureRouting
+import com.urepair.plugins.configureSerialization
 import io.ktor.server.application.*
-import com.urepair.plugins.*
 import io.ktor.server.auth.*
-import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.plugins.cors.routing.CORS
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {

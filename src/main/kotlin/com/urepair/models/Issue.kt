@@ -1,10 +1,10 @@
 package com.urepair.models
 
 import kotlinx.datetime.LocalDateTime
-import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.javatime.datetime
 import kotlinx.datetime.serializers.LocalDateTimeComponentSerializer
+import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.datetime
 
 @Serializable
 data class Issue(
@@ -19,18 +19,18 @@ data class Issue(
     @Serializable(with = LocalDateTimeComponentSerializer::class)
     val dateResolved: LocalDateTime?,
     val resolutionDetails: String?,
-    val notes: String?
+    val notes: String?,
 ) { enum class Priority {
-        LOW,
-        MEDIUM,
-        HIGH,
-        URGENT
-    }
+    LOW,
+    MEDIUM,
+    HIGH,
+    URGENT,
+}
     enum class Status {
         NEW,
         IN_PROGRESS,
         RESOLVED,
-        CLOSED
+        CLOSED,
     }
     init {
         if (assignedTo != null) {

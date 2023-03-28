@@ -1,7 +1,7 @@
 package com.urepair.models
 
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Table
 
 @Serializable
 data class User(
@@ -11,9 +11,9 @@ data class User(
     val email: String,
     val role: Role,
 ) { enum class Role {
-        STAFF,
-        STUDENT
-    }
+    STAFF,
+    STUDENT,
+}
     init {
         require(email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex())) { "Invalid email address" }
     }
