@@ -60,7 +60,7 @@ interface DAOFacade {
     suspend fun deleteIssue(id: Int): Boolean
 
     suspend fun allUsers(): List<User>
-    suspend fun user(id: Int): User?
+    suspend fun user(email: String): User?
     suspend fun addNewUser(
         firstName: String,
         lastName: String,
@@ -68,11 +68,10 @@ interface DAOFacade {
         role: User.Role,
     ): User?
     suspend fun editUser(
-        id: Int,
         firstName: String,
         lastName: String,
         email: String,
         role: User.Role,
     ): Boolean
-    suspend fun deleteUser(id: Int): Boolean
+    suspend fun deleteUser(email: String): Boolean
 }

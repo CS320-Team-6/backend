@@ -20,11 +20,10 @@ data class User(
 }
 
 object UserTable : Table() {
-    val id = integer("id").autoIncrement()
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)
-    val email = varchar("email", 255).uniqueIndex()
+    val email = varchar("email", 255)
     val role = enumerationByName("role", 255, User.Role::class)
 
-    override val primaryKey = PrimaryKey(IssueTable.id)
+    override val primaryKey = PrimaryKey(email)
 }

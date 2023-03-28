@@ -49,7 +49,6 @@ class DAOFacadeImpl : DAOFacade {
     )
 
     private fun resultRowToUser(row: ResultRow) = User(
-        id = row[UserTable.id],
         firstName = row[UserTable.firstName],
         lastName = row[UserTable.lastName],
         email = row[UserTable.email],
@@ -210,9 +209,9 @@ class DAOFacadeImpl : DAOFacade {
         UserTable.selectAll().map(::resultRowToUser)
     }
 
-    override suspend fun user(id: Int): User? = dbQuery {
+    override suspend fun user(email: String): User? = dbQuery {
         UserTable
-            .select { UserTable.id eq id }
+            .select { UserTable.email eq email }
             .map(::resultRowToUser)
             .singleOrNull()
     }
@@ -224,14 +223,14 @@ class DAOFacadeImpl : DAOFacade {
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToUser)
     }
 
-    override suspend fun editUser(id: Int, firstName: String, lastName: String, email: String, role: User.Role): Boolean = dbQuery {
-        UserTable.update({ UserTable.id eq id }) {
+    override suspend fun editUser(firstName: String, lastName: String, email: String, role: User.Role): Boolean = dbQuery {
+        UserTable.update({ UserTable.email eq email }) {
             setUserValues(it, firstName, lastName, email, role)
         } > 0
     }
 
-    override suspend fun deleteUser(id: Int): Boolean = dbQuery {
-        UserTable.deleteWhere { UserTable.id eq id } > 0
+    override suspend fun deleteUser(email: String): Boolean = dbQuery {
+        UserTable.deleteWhere { UserTable.email eq email } > 0
     }
 }
 

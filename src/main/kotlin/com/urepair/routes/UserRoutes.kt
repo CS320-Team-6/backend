@@ -18,13 +18,13 @@ fun Route.listUsersRoute() {
 }
 fun Route.getUserRoute() {
     authenticate("auth-basic") {
-        get("/user/{id?}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing id",
+        get("/user/{email?}") {
+            val email = call.parameters["email"] ?: return@get call.respondText(
+                "Missing email",
                 status = HttpStatusCode.BadRequest,
             )
-            val user = dao.user(id.toInt()) ?: return@get call.respondText(
-                "No user with id $id",
+            val user = dao.user(email) ?: return@get call.respondText(
+                "No user with id $email",
                 status = HttpStatusCode.NotFound,
             )
             call.respond(user)
@@ -50,8 +50,8 @@ fun Route.addUserRoute() {
 fun Route.removeUserRoute() {
     authenticate("auth-basic") {
         delete("/user/{id?}") {
-            val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
-            if (dao.deleteUser(id.toInt())) {
+            val email = call.parameters["email"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
+            if (dao.deleteUser(email)) {
                 call.respondText("User removed correctly", status = HttpStatusCode.Accepted)
             } else {
                 call.respondText("Not Found", status = HttpStatusCode.NotFound)
