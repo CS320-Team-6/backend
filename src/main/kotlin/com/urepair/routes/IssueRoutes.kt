@@ -34,7 +34,7 @@ fun Route.getIssueRoute() {
 fun Route.addIssueRoute() {
     post("/issue") {
         val issue = call.receive<Issue>()
-        dao.addNewIssue(
+        val newIssue = dao.addNewIssue(
             equipmentId = issue.equipmentId,
             description = issue.description,
             status = issue.status,
@@ -45,7 +45,9 @@ fun Route.addIssueRoute() {
             resolutionDetails = issue.resolutionDetails,
             notes = issue.notes,
         )
-        call.respondText("Equipment stored correctly", status = HttpStatusCode.Created)
+        newIssue?.let {
+            call.respondText("${it.id}", status = HttpStatusCode.Created)
+        } ?: call.respond(HttpStatusCode.InternalServerError)
     }
 }
 
