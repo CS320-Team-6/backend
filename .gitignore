@@ -36,6 +36,9 @@ out/
 .vscode/
 
 ### Auth Files ###
-authentication.properties
-dbconfig.properties
+resources/authentication.properties
+src/main/resources/dbconfig.properties
+src/main/resources/authentication.properties
 keystore.properties
+
+

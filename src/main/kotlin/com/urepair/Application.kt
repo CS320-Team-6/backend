@@ -9,14 +9,13 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.plugins.cors.routing.CORS
-import java.io.FileInputStream
 import java.util.Properties
 
 fun loadProperties(fileName: String): Properties {
     val properties = Properties()
-    val propertiesFile = FileInputStream(fileName)
-    properties.load(propertiesFile)
-    propertiesFile.close()
+    Thread.currentThread().contextClassLoader.getResourceAsStream(fileName).use { inputStream ->
+        properties.load(inputStream)
+    }
     return properties
 }
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)

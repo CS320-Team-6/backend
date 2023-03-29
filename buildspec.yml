@@ -8,17 +8,12 @@ phases:
     commands:
       - echo "Building Ktor project"
       - ./gradlew clean
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/authentication.properties src/main/resources/
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties src/main/resources/
   build:
     commands:
       - ./gradlew buildFatJar
-  post_build:
-    commands:
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/authentication.properties ./.
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties ./.
-
 artifacts:
   files:
     - build/libs/backend-all.jar
-    - authentication.properties
-    - dbconfig.properties
   discard-paths: yes

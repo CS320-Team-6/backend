@@ -8,15 +8,15 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.FileInputStream
 import java.util.Properties
 
 object DatabaseFactory {
     private fun loadProperties(): Properties {
         val properties = Properties()
-        val propertiesFile = FileInputStream("dbconfig.properties")
-        properties.load(propertiesFile)
-        propertiesFile.close()
+        val propertiesFileName = "dbconfig.properties"
+        this::class.java.classLoader.getResourceAsStream(propertiesFileName).use { inputStream ->
+            properties.load(inputStream)
+        }
         return properties
     }
     fun init() {
