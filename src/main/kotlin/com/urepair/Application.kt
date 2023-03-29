@@ -9,7 +9,6 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.plugins.cors.routing.CORS
-import io.ktor.server.routing.*
 import java.util.Properties
 
 fun loadProperties(fileName: String): Properties {
@@ -41,8 +40,5 @@ fun Application.module() {
     }
     DatabaseFactory.init()
     configureSerialization()
-    routing {
-
-    }
     configureRouting()
 }

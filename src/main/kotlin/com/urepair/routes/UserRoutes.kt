@@ -20,6 +20,7 @@ fun Route.listUsersRoute() {
         }
     }
 }
+
 fun Route.getUserRoute() {
     authenticate("auth-basic") {
         get("/user/{email?}") {
@@ -53,7 +54,7 @@ fun Route.addUserRoute() {
 
 fun Route.removeUserRoute() {
     authenticate("auth-basic") {
-        delete("/user/{id?}") {
+        delete("/user/{email?}") {
             val email = call.parameters["email"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
             if (dao.deleteUser(email)) {
                 call.respondText("User removed correctly", status = HttpStatusCode.Accepted)
