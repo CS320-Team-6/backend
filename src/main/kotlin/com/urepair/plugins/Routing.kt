@@ -14,18 +14,10 @@ import com.urepair.routes.removeEquipmentRoute
 import com.urepair.routes.removeIssueRoute
 import com.urepair.routes.removeUserRoute
 import io.ktor.server.application.Application
-import io.ktor.server.application.call
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-
-// import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
     routing {
-        get("/") {
-            call.respondText("Welcome to urepair!\n To get started, try navigating to /equipment")
-        }
         listEquipmentRoute()
         getEquipmentRoute()
         addEquipmentRoute()
