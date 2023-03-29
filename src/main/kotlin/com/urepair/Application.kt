@@ -8,7 +8,6 @@ import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
-import io.ktor.server.http.content.*
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.routing.*
 import java.util.Properties
@@ -43,15 +42,7 @@ fun Application.module() {
     DatabaseFactory.init()
     configureSerialization()
     routing {
-//        singlePageApplication {
-//            useResources = true
-//            filesPath = "frontend"
-//            defaultPage = "main.html"
-//            ignoreFiles { it.endsWith(".txt") }
-//        }
-        singlePageApplication {
-            react("react-app")
-        }
+
     }
     configureRouting()
 }
