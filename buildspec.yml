@@ -10,6 +10,8 @@ phases:
       - ./gradlew clean
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/authentication.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties src/main/resources/
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.properties src/main/resources/
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.jks src/main/resources/
   build:
     commands:
       - ./gradlew buildFatJar

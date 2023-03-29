@@ -15,16 +15,11 @@ import com.urepair.routes.removeIssueRoute
 import com.urepair.routes.removeUserRoute
 import io.ktor.server.application.Application
 import io.ktor.server.http.content.react
-import io.ktor.server.http.content.resource
 import io.ktor.server.http.content.singlePageApplication
-import io.ktor.server.http.content.static
 import io.ktor.server.routing.routing
 
 fun Application.configureRouting() {
     routing {
-        static("/") {
-            resource("favicon.ico", "react-app/favicon.ico")
-        }
         singlePageApplication {
             useResources = true
             react("react-app")
