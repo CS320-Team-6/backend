@@ -13,7 +13,7 @@ phases:
       - ./gradlew buildFatJar
   post_build:
     commands:
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths ./
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/* ./
 artifacts:
   files:
     - build/libs/backend-all.jar
