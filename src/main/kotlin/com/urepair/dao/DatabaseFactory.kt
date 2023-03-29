@@ -1,6 +1,7 @@
 package com.urepair.dao
 
 import com.urepair.models.EquipmentTable
+import com.urepair.models.IssueCountTable
 import com.urepair.models.IssueTable
 import com.urepair.models.UserTable
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,7 @@ object DatabaseFactory {
             SchemaUtils.create(EquipmentTable)
             SchemaUtils.create(IssueTable)
             SchemaUtils.create(UserTable)
+            SchemaUtils.create(IssueCountTable)
         }
     }
 

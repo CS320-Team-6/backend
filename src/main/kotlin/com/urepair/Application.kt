@@ -53,7 +53,7 @@ fun main() {
             keyAlias = keyAlias,
             keyStorePassword = { keyStorePassword.toCharArray() },
             privateKeyPassword = { privateKeyPassword.toCharArray() }) {
-            port = (System.getenv("PORT")?:"8433").toInt()
+            port = 8433
         }
         module(Application::module)
     }

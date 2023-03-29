@@ -7,6 +7,11 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 
 @Serializable
+data class IssueCount(
+    val equipmentId: Int,
+    val issueCount: Int,
+)
+@Serializable
 data class Issue(
     val id: Int? = null, // Nullable
     val equipmentId: Int,
@@ -37,6 +42,12 @@ data class Issue(
             require(assignedTo.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex())) { "Invalid email address" }
         }
     }
+}
+object IssueCountTable : Table() {
+    val equipmentId = integer("equipment_id") references EquipmentTable.id
+    val issueCount = integer("issue_count")
+
+    override val primaryKey = PrimaryKey(equipmentId)
 }
 object IssueTable : Table() {
     val id = integer("id").autoIncrement()

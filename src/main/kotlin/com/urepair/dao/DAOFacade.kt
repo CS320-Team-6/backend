@@ -2,6 +2,7 @@ package com.urepair.dao
 
 import com.urepair.models.Equipment
 import com.urepair.models.Issue
+import com.urepair.models.IssueCount
 import com.urepair.models.User
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -74,4 +75,9 @@ interface DAOFacade {
         role: User.Role,
     ): Boolean
     suspend fun deleteUser(email: String): Boolean
+    suspend fun allIssueCounts(): List<IssueCount>
+    suspend fun issueCount(equipmentId: Int): IssueCount?
+    suspend fun deleteIssueCount(equipmentId: Int): Boolean
+    suspend fun addNewIssueCount(equipmentId: Int): IssueCount?
+    suspend fun updateIssueCount(equipmentId: Int, increment: Boolean = true): Boolean
 }

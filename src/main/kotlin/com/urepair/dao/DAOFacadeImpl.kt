@@ -1,12 +1,7 @@
 package com.urepair.dao
 
 import com.urepair.dao.DatabaseFactory.dbQuery
-import com.urepair.models.Equipment
-import com.urepair.models.EquipmentTable
-import com.urepair.models.Issue
-import com.urepair.models.IssueTable
-import com.urepair.models.User
-import com.urepair.models.UserTable
+import com.urepair.models.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -46,6 +41,10 @@ class DAOFacadeImpl : DAOFacade {
         dateResolved = row[IssueTable.dateResolved]?.toKotlinLocalDateTime(),
         resolutionDetails = row[IssueTable.resolutionDetails],
         notes = row[IssueTable.notes],
+    )
+    private fun resultRowToIssueCount(row: ResultRow) = IssueCount(
+        equipmentId = row[IssueCountTable.equipmentId],
+        issueCount = row[IssueCountTable.issueCount]
     )
 
     private fun resultRowToUser(row: ResultRow) = User(
@@ -108,6 +107,14 @@ class DAOFacadeImpl : DAOFacade {
         it[UserTable.lastName] = lastName
         it[UserTable.email] = email
         it[UserTable.role] = role
+    }
+    private fun setIssueCountValues(
+        it: UpdateBuilder<*>,
+        equipmentId: Int,
+        issueCount: Int,
+    ) {
+        it[IssueCountTable.equipmentId] = equipmentId
+        it[IssueCountTable.issueCount] = issueCount
     }
     override suspend fun allEquipment(): List<Equipment> = dbQuery {
         EquipmentTable.selectAll().map(::resultRowToEquipment)
@@ -196,9 +203,13 @@ class DAOFacadeImpl : DAOFacade {
         resolutionDetails: String?,
         notes: String?,
     ): Boolean = dbQuery {
+        if(status == Issue.Status.CLOSED) {
+            updateIssueCount(equipmentId, false)
+        }
         IssueTable.update({ IssueTable.id eq id }) {
             setIssueValues(it, equipmentId, status, dateReported, priority, description, assignedTo, dateResolved, resolutionDetails, notes)
         } > 0
+
     }
 
     override suspend fun deleteIssue(id: Int): Boolean = dbQuery {
@@ -232,6 +243,34 @@ class DAOFacadeImpl : DAOFacade {
     override suspend fun deleteUser(email: String): Boolean = dbQuery {
         UserTable.deleteWhere { UserTable.email eq email } > 0
     }
+
+    override suspend fun allIssueCounts(): List<IssueCount> = dbQuery {
+        IssueCountTable.selectAll().map(::resultRowToIssueCount)
+    }
+
+    override suspend fun issueCount(equipmentId: Int): IssueCount? = dbQuery {
+        IssueCountTable
+            .select { IssueCountTable.equipmentId eq equipmentId }
+            .map(::resultRowToIssueCount)
+            .singleOrNull()
+    }
+
+    override suspend fun addNewIssueCount(equipmentId: Int): IssueCount? = dbQuery {
+        val insertStatement = IssueCountTable.insert {
+            setIssueCountValues(it, equipmentId, 1)
+        }
+        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToIssueCount)
+    }
+    override suspend fun updateIssueCount(equipmentId: Int, increment: Boolean): Boolean = dbQuery {
+        val issueCount = issueCount(equipmentId)?.issueCount ?: return@dbQuery false
+        IssueCountTable.update({ IssueCountTable.equipmentId eq equipmentId }) {
+            setIssueCountValues(it, equipmentId, if (increment) issueCount + 1 else issueCount - 1)
+        } > 0
+    }
+
+    override suspend fun deleteIssueCount(equipmentId: Int): Boolean = dbQuery {
+        IssueCountTable.deleteWhere { IssueCountTable.equipmentId eq equipmentId } > 0
+    }
 }
 
 val dao: DAOFacade = DAOFacadeImpl().apply {
@@ -244,6 +283,9 @@ val dao: DAOFacade = DAOFacadeImpl().apply {
         }
         if (allIssues().isEmpty()) {
             addNewIssue(1, Issue.Status.valueOf("NEW"), LocalDateTime(2023, 3, 5, 2, 15), Issue.Priority.valueOf("LOW"), null, "jwordell@umass.edu", null, null, null)
+        }
+        if (allIssueCounts().isEmpty()) {
+            addNewIssueCount(1)
         }
     }
 }

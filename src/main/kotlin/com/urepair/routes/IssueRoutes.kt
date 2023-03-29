@@ -50,6 +50,9 @@ fun Route.addIssueRoute() {
             notes = issue.notes,
         )
         newIssue?.let {
+            if(!dao.updateIssueCount(issue.equipmentId)) {
+                dao.addNewIssueCount(issue.equipmentId)
+            }
             call.respondText("${it.id}", status = HttpStatusCode.Created)
         } ?: call.respond(HttpStatusCode.InternalServerError)
     }
@@ -61,6 +64,61 @@ fun Route.removeIssueRoute() {
             val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
             if (dao.deleteIssue(id.toInt())) {
                 call.respondText("Issue removed correctly", status = HttpStatusCode.Accepted)
+            } else {
+                call.respondText("Not Found", status = HttpStatusCode.NotFound)
+            }
+        }
+    }
+}
+
+fun Route.listIssuesCountRoute() {
+    authenticate("auth-basic") {
+        get("/issue/count") {
+            call.respond(mapOf("issue_count_table" to dao.allIssueCounts()))
+        }
+    }
+}
+fun Route.getIssueCountRoute() {
+    // remove authentication for now
+    get("/issue/count/{equipment_id?}") {
+        val equipmentId = call.parameters["equipment_id"] ?: return@get call.respondText(
+            "Missing equipment id",
+            status = HttpStatusCode.BadRequest,
+        )
+        val issueCount = dao.issueCount(equipmentId.toInt()) ?: return@get call.respondText(
+            "No issues with equipment id $equipmentId",
+            status = HttpStatusCode.NotFound,
+        )
+        call.respond(issueCount)
+    }
+}
+
+fun Route.addIssueCountRoute() {
+    post("/issue") {
+        val issue = call.receive<Issue>()
+        val newIssue = dao.addNewIssue(
+            equipmentId = issue.equipmentId,
+            description = issue.description,
+            status = issue.status,
+            dateReported = issue.dateReported,
+            priority = issue.priority,
+            assignedTo = issue.assignedTo,
+            dateResolved = issue.dateResolved,
+            resolutionDetails = issue.resolutionDetails,
+            notes = issue.notes,
+        )
+        newIssue?.let {
+            call.respondText("${it.id}", status = HttpStatusCode.Created)
+        } ?: call.respond(HttpStatusCode.InternalServerError)
+    }
+}
+
+fun Route.removeIssueCountRoute() {
+    authenticate("auth-basic") {
+        delete("/issue/count/{equipment_id?}") {
+            val equipmentId = call.parameters["equipment_id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
+            if (dao.deleteIssue(equipmentId.toInt())) {
+                call.respondText("Issue count removed correctly", status = HttpStatusCode.Accepted)
             } else {
                 call.respondText("Not Found", status = HttpStatusCode.NotFound)
             }
