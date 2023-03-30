@@ -43,3 +43,4 @@ src/main/resources/keystore.jks
 /src/main/resources/mycert.crt
 /src/main/resources/mykey.key
 .ebextensions/https-instance.config
+/src/main/resources/application.conf

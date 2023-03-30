@@ -3,7 +3,7 @@ package com.urepair
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
-import io.ktor.network.tls.certificates.buildKeyStore
+import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
@@ -16,7 +16,7 @@ import io.ktor.server.engine.sslConnector
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.CORS
 import org.slf4j.LoggerFactory
-import java.security.KeyStore
+import java.io.File
 import java.util.Properties
 
 fun loadProperties(fileName: String): Properties {
@@ -32,17 +32,14 @@ fun main() {
     val keyStorePassword = keystoreProperties.getProperty("keyStorePassword")
     val privateKeyPassword = keystoreProperties.getProperty("privateKeyPassword")
 
-    val keyStoreFile = KeyStore.getInstance(KeyStore.getDefaultType())
-    Thread.currentThread().contextClassLoader.getResourceAsStream("keyStore").use { inputStream ->
-        keyStoreFile.load(inputStream, keyStorePassword.toCharArray())
-    }
+    val keyStoreFile = File("keystore.jks")
     val keyStore = buildKeyStore {
         certificate(keyAlias) {
             password = keyStorePassword
             domains = listOf("127.0.0.1", "0.0.0.0", "localhost")
         }
     }
-
+    keyStore.saveToFile(keyStoreFile, keyStorePassword)
     val environment = applicationEngineEnvironment {
         log = LoggerFactory.getLogger("ktor.application")
         connector {
@@ -55,6 +52,7 @@ fun main() {
             privateKeyPassword = { privateKeyPassword.toCharArray() },
         ) {
             port = 8433
+            keyStorePath = keyStoreFile
         }
         module(Application::module)
     }
