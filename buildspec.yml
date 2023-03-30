@@ -12,9 +12,8 @@ phases:
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.jks src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mycert.crt .ebextensions/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mykey.key .ebextensions/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/https-instance.config .ebextensions/
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mycert.crt /etc/pki/tls/certs/server.crt
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mykey.key /etc/pki/tls/certs/server.key
   build:
     commands:
       - ./gradlew buildFatJar
