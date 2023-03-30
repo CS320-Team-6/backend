@@ -1,7 +1,14 @@
 package com.urepair.dao
 
 import com.urepair.dao.DatabaseFactory.dbQuery
-import com.urepair.models.*
+import com.urepair.models.Equipment
+import com.urepair.models.EquipmentTable
+import com.urepair.models.Issue
+import com.urepair.models.IssueCount
+import com.urepair.models.IssueCountTable
+import com.urepair.models.IssueTable
+import com.urepair.models.User
+import com.urepair.models.UserTable
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -44,7 +51,7 @@ class DAOFacadeImpl : DAOFacade {
     )
     private fun resultRowToIssueCount(row: ResultRow) = IssueCount(
         equipmentId = row[IssueCountTable.equipmentId],
-        issueCount = row[IssueCountTable.issueCount]
+        issueCount = row[IssueCountTable.issueCount],
     )
 
     private fun resultRowToUser(row: ResultRow) = User(
@@ -203,13 +210,12 @@ class DAOFacadeImpl : DAOFacade {
         resolutionDetails: String?,
         notes: String?,
     ): Boolean = dbQuery {
-        if(status == Issue.Status.CLOSED) {
+        if (status == Issue.Status.CLOSED) {
             updateIssueCount(equipmentId, false)
         }
         IssueTable.update({ IssueTable.id eq id }) {
             setIssueValues(it, equipmentId, status, dateReported, priority, description, assignedTo, dateResolved, resolutionDetails, notes)
         } > 0
-
     }
 
     override suspend fun deleteIssue(id: Int): Boolean = dbQuery {

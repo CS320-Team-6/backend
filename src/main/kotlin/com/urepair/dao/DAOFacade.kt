@@ -32,7 +32,6 @@ interface DAOFacade {
         lastMaintenanceDate: LocalDate?,
     ): Boolean
     suspend fun deleteEquipment(id: Int): Boolean
-
     suspend fun allIssues(): List<Issue>
     suspend fun issue(id: Int): Issue?
     suspend fun addNewIssue(

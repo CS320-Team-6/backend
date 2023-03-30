@@ -11,6 +11,7 @@ data class IssueCount(
     val equipmentId: Int,
     val issueCount: Int,
 )
+
 @Serializable
 data class Issue(
     val id: Int? = null, // Nullable

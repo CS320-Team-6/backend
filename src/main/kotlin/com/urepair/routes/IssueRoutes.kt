@@ -50,7 +50,7 @@ fun Route.addIssueRoute() {
             notes = issue.notes,
         )
         newIssue?.let {
-            if(!dao.updateIssueCount(issue.equipmentId)) {
+            if (!dao.updateIssueCount(issue.equipmentId)) {
                 dao.addNewIssueCount(issue.equipmentId)
             }
             call.respondText("${it.id}", status = HttpStatusCode.Created)

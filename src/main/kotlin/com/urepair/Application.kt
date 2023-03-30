@@ -3,21 +3,21 @@ package com.urepair
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
+import io.ktor.network.tls.certificates.buildKeyStore
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
-import io.ktor.server.plugins.cors.routing.CORS
-import java.util.Properties
-import io.ktor.network.tls.certificates.buildKeyStore
 import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.connector
-import io.ktor.server.engine.sslConnector
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.engine.sslConnector
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.cors.routing.CORS
 import org.slf4j.LoggerFactory
 import java.security.KeyStore
+import java.util.Properties
 
 fun loadProperties(fileName: String): Properties {
     val properties = Properties()
@@ -46,18 +46,19 @@ fun main() {
     val environment = applicationEngineEnvironment {
         log = LoggerFactory.getLogger("ktor.application")
         connector {
-            port = (System.getenv("PORT")?:"5000").toInt()
+            port = (System.getenv("PORT") ?: "5000").toInt()
         }
         sslConnector(
             keyStore = keyStore,
             keyAlias = keyAlias,
             keyStorePassword = { keyStorePassword.toCharArray() },
-            privateKeyPassword = { privateKeyPassword.toCharArray() }) {
+            privateKeyPassword = { privateKeyPassword.toCharArray() },
+        ) {
             port = 8433
         }
         module(Application::module)
     }
-    embeddedServer(Netty, environment=environment).start(wait = true)
+    embeddedServer(Netty, environment = environment).start(wait = true)
 }
 fun Application.module() {
     install(CORS) {
