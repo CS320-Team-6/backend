@@ -12,8 +12,9 @@ phases:
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.jks src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mycert.crt src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mykey.key src/main/resources/
+      - mkdir -p certs
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mycert.crt certs/resources/
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/mykey.key certs/resources/
   build:
     commands:
       - ./gradlew buildFatJar
@@ -21,4 +22,6 @@ artifacts:
   files:
     - build/libs/backend-all.jar
     - .ebextensions/**/*
+    - certs/mycert.crt
+    - certs/mykey.key
   discard-paths: yes
