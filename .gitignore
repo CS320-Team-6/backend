@@ -40,3 +40,5 @@ src/main/resources/dbconfig.properties
 src/main/resources/authentication.properties
 src/main/resources/keystore.properties
 src/main/resources/keystore.jks
+/src/main/resources/mycert.crt
+/src/main/resources/mykey.key
