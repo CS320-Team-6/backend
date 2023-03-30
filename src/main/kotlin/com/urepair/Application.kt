@@ -3,20 +3,12 @@ package com.urepair
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
-import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
-import io.ktor.server.engine.applicationEngineEnvironment
-import io.ktor.server.engine.connector
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.engine.sslConnector
-import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.CORS
-import org.slf4j.LoggerFactory
-import java.io.File
 import java.util.Properties
 
 fun loadProperties(fileName: String): Properties {
@@ -26,38 +18,7 @@ fun loadProperties(fileName: String): Properties {
     }
     return properties
 }
-fun main() {
-    val keystoreProperties = loadProperties("keystore.properties")
-    val keyAlias = keystoreProperties.getProperty("keyAlias")
-    val keyStorePassword = keystoreProperties.getProperty("keyStorePassword")
-    val privateKeyPassword = keystoreProperties.getProperty("privateKeyPassword")
-
-    val keyStoreFile = File("keystore.jks")
-    val keyStore = buildKeyStore {
-        certificate(keyAlias) {
-            password = keyStorePassword
-            domains = listOf("127.0.0.1", "0.0.0.0", "localhost")
-        }
-    }
-    keyStore.saveToFile(keyStoreFile, keyStorePassword)
-    val environment = applicationEngineEnvironment {
-        log = LoggerFactory.getLogger("ktor.application")
-        connector {
-            port = (System.getenv("PORT") ?: "5000").toInt()
-        }
-        sslConnector(
-            keyStore = keyStore,
-            keyAlias = keyAlias,
-            keyStorePassword = { keyStorePassword.toCharArray() },
-            privateKeyPassword = { privateKeyPassword.toCharArray() },
-        ) {
-            port = 8433
-            keyStorePath = keyStoreFile
-        }
-        module(Application::module)
-    }
-    embeddedServer(Netty, environment = environment).start(wait = true)
-}
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
     install(CORS) {
         anyHost()
