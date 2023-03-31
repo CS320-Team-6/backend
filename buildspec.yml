@@ -24,9 +24,10 @@ phases:
     commands:
       - mkdir -p .platform/nginx/conf.d
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/https.conf .platform/nginx/conf.d/
+      - cp build/libs/backend-all.jar ./
 artifacts:
   files:
-    - build/libs/backend-all.jar
+    - backend-all.jar
     - .platform/**/*
     - certs/**/*
     - server.jks
