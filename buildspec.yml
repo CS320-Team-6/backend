@@ -24,8 +24,8 @@ phases:
   post_build:
     commands:
       - cp build/libs/backend-all.jar ./
-      - mkdir -p .ebextensions/nginx/conf.d/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/https.conf .ebextensions/nginx/conf.d/
+      - mkdir -p .ebextensions/
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/nginx.config .ebextensions/
 
 artifacts:
   files:
