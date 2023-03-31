@@ -20,16 +20,9 @@ phases:
   build:
     commands:
       - ./gradlew buildFatJar
-      -
-  post_build:
-    commands:
-      - cp build/libs/backend-all.jar ./
-      - mkdir -p .ebextensions/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/nginx.config .ebextensions/
-
 artifacts:
   files:
-    - backend-all.jar
+    - build/libs/backend-all.jar
     - .ebextensions/**/*
     - certs/**/*
     - server.jks
