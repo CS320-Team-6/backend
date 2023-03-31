@@ -22,12 +22,12 @@ phases:
       - ./gradlew buildFatJar
   post_build:
     commands:
-      - mkdir -p .ebextensions/nginx/conf.d
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/https.conf .ebextensions/nginx/conf.d/
+      - mkdir -p .platform/nginx/conf.d
+      - aws s3 cp s3://urepair-test-john2-pipeline/auths/https.conf .platform/nginx/conf.d/
 artifacts:
   files:
     - build/libs/backend-all.jar
-    - .ebextensions/**/*
+    - .platform/**/*
     - certs/**/*
     - server.jks
   discard-paths: no
