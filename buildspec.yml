@@ -23,6 +23,7 @@ phases:
   post_build:
     commands:
       - cp build/libs/backend-all.jar ./
+      - ls .ebextensions/nginx/conf.d/https.conf
 
 artifacts:
   files:
