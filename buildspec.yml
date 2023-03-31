@@ -13,7 +13,6 @@ phases:
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.properties src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/application.conf src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.jks src/main/resources/
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.jks ./
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.crt certs/server.crt
       - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.key certs/server.key
