@@ -20,10 +20,14 @@ phases:
   build:
     commands:
       - ./gradlew buildFatJar
+  post_build:
+    commands:
+      - cp build/libs/backend-all.jar ./
+
 artifacts:
   files:
-    - build/libs/backend-all.jar
-    - .ebextensions/
+    - backend-all.jar
+    - .ebextensions/**/*
     - certs/**/*
     - server.jks
-  discard-paths: yes
+  discard-paths: no
