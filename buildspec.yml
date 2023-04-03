@@ -9,20 +9,19 @@ phases:
       - echo "Building Ktor project"
       - ./gradlew clean
       - mkdir -p certs
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/authentication.properties src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/dbconfig.properties src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/keystore.properties src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/application.conf src/main/resources/
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.jks ./
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.crt certs/server.crt
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/server.key certs/server.key
+      - aws s3 cp s3://urepair/auths/authentication.properties src/main/resources/
+      - aws s3 cp s3://urepair/auths/dbconfig.properties src/main/resources/
+      - aws s3 cp s3://urepair/auths/application.conf src/main/resources/
+      - aws s3 cp s3://urepair/auths/server.jks ./
+      - aws s3 cp s3://urepair/auths/server.crt certs/server.crt
+      - aws s3 cp s3://urepair/auths/server.key certs/server.key
   build:
     commands:
       - ./gradlew buildFatJar
   post_build:
     commands:
       - mkdir -p .platform/nginx/conf.d
-      - aws s3 cp s3://urepair-test-john2-pipeline/auths/https.conf .platform/nginx/conf.d/
+      - aws s3 cp s3://urepair/auths/https.conf .platform/nginx/conf.d/
       - cp build/libs/backend-all.jar ./
 artifacts:
   files:
