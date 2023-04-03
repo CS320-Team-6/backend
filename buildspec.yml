@@ -21,7 +21,10 @@ phases:
   post_build:
     commands:
       - mkdir -p .platform/nginx/conf.d
+      - mkdir -p .ebextensions/
       - aws s3 cp s3://urepair/auths/https.conf .platform/nginx/conf.d/
+      - aws s3 cp s3://urepair/auths/https-instance.yml .ebextensions/https-instance.config
+      - aws s3 cp s3://urepair/auths/https-instance-single.yml .ebextensions/https-instance-single.config
       - cp build/libs/backend-all.jar ./
 artifacts:
   files:
@@ -29,4 +32,5 @@ artifacts:
     - .platform/**/*
     - certs/**/*
     - server.jks
+    - .ebextensions/**/*
   discard-paths: no

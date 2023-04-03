@@ -38,11 +38,6 @@ out/
 ### Auth Files ###
 src/main/resources/dbconfig.properties
 src/main/resources/authentication.properties
-src/main/resources/keystore.properties
-src/main/resources/keystore.jks
-/src/main/resources/mycert.crt
-/src/main/resources/mykey.key
-.ebextensions/https-instance.config
 /src/main/resources/application.conf
-/src/main/resources/.ebextensions/https-instance.config
-/server.jks
+server.jks
+/.ebextensions/https-instance.yml
