@@ -183,7 +183,7 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun addNewIssue(
         equipmentId: Int,
-        status: Issue.Status,
+        status: Issue.Status ?,
         dateReported: LocalDateTime,
         priority: Issue.Priority,
         description: String?,
@@ -193,7 +193,7 @@ class DAOFacadeImpl : DAOFacade {
         notes: String?,
     ): Issue? = dbQuery {
         val insertStatement = IssueTable.insert {
-            setIssueValues(it, equipmentId, status, dateReported, priority, description, assignedTo, dateResolved, resolutionDetails, notes)
+            setIssueValues(it, equipmentId, Issue.Status.NEW, dateReported, priority, description, assignedTo, dateResolved, resolutionDetails, notes)
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToIssue)
     }

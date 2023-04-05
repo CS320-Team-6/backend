@@ -16,7 +16,7 @@ data class IssueCount(
 data class Issue(
     val id: Int? = null, // Nullable
     val equipmentId: Int,
-    val status: Status,
+    val status: Status?,
     @Serializable(with = LocalDateTimeComponentSerializer::class)
     val dateReported: LocalDateTime,
     val priority: Priority,
@@ -31,8 +31,7 @@ data class Issue(
     MEDIUM,
     HIGH,
     URGENT,
-}
-    enum class Status {
+} enum class Status {
         NEW,
         IN_PROGRESS,
         RESOLVED,

@@ -36,7 +36,7 @@ interface DAOFacade {
     suspend fun issue(id: Int): Issue?
     suspend fun addNewIssue(
         equipmentId: Int,
-        status: Issue.Status,
+        status: Issue.Status?,
         dateReported: LocalDateTime,
         priority: Issue.Priority,
         description: String?,
