@@ -14,8 +14,10 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 
 fun Route.listIssuesRoute() {
-    get("/issue") {
-        call.respond(mapOf("issue_table" to dao.allIssues()))
+    authenticate("auth-basic") {
+        get("/issue") {
+            call.respond(mapOf("issue_table" to dao.allIssues()))
+        }
     }
 }
 fun Route.getIssueRoute() {
