@@ -183,7 +183,7 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun addNewIssue(
         equipmentId: Int,
-        status: Issue.Status ?,
+        status: Issue.Status?,
         dateReported: LocalDateTime,
         priority: Issue.Priority,
         description: String?,

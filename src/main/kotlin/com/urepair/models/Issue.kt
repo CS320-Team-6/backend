@@ -32,11 +32,11 @@ data class Issue(
     HIGH,
     URGENT,
 } enum class Status {
-        NEW,
-        IN_PROGRESS,
-        RESOLVED,
-        CLOSED,
-    }
+    NEW,
+    IN_PROGRESS,
+    RESOLVED,
+    CLOSED,
+}
     init {
         if (assignedTo != null) {
             require(assignedTo.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex())) { "Invalid email address" }

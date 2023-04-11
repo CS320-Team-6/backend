@@ -4,6 +4,7 @@ import com.urepair.routes.addEquipmentRoute
 import com.urepair.routes.addIssueCountRoute
 import com.urepair.routes.addIssueRoute
 import com.urepair.routes.addUserRoute
+import com.urepair.routes.editIssueRoute
 import com.urepair.routes.equipmentQrCode
 import com.urepair.routes.getEquipmentRoute
 import com.urepair.routes.getIssueCountRoute
@@ -42,6 +43,7 @@ fun Application.configureRouting() {
         listUsersRoute()
         getUserRoute()
         addUserRoute()
+        editIssueRoute()
         removeUserRoute()
 
         listIssuesCountRoute()

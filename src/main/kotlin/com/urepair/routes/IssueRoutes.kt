@@ -25,11 +25,11 @@ fun Route.getIssueRoute() {
             "Missing id",
             status = HttpStatusCode.BadRequest,
         )
-        val equip = dao.issue(id.toInt()) ?: return@get call.respondText(
+        val issue = dao.issue(id.toInt()) ?: return@get call.respondText(
             "No issue with id $id",
             status = HttpStatusCode.NotFound,
         )
-        call.respond(equip)
+        call.respond(issue)
     }
 }
 
@@ -53,6 +53,34 @@ fun Route.addIssueRoute() {
             }
             call.respondText("${it.id}", status = HttpStatusCode.Created)
         } ?: call.respond(HttpStatusCode.InternalServerError)
+    }
+}
+fun Route.editIssueRoute() {
+    post("/issue/{id?}") {
+        val id = call.parameters["id"] ?: return@post call.respondText(
+            "Missing id",
+            status = HttpStatusCode.BadRequest,
+        )
+        val issue = call.receive<Issue>()
+        val editedIssue = dao.editIssue(
+            id.toInt(),
+            issue.equipmentId,
+            issue.status ?: Issue.Status.NEW,
+            issue.dateReported,
+            issue.priority,
+            issue.description,
+            issue.assignedTo,
+            issue.dateResolved,
+            issue.resolutionDetails,
+            issue.notes,
+        )
+        editedIssue.let {
+            if (editedIssue) {
+                call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
+            } else {
+                call.respond(HttpStatusCode.InternalServerError)
+            }
+        }
     }
 }
 
