@@ -93,7 +93,7 @@ fun Route.equipmentQrCode() {
                 withContext(Dispatchers.IO) {
                     file.parentFile.mkdirs()
                     FileOutputStream(fileName).use {
-                        QRCode("localhost:3000/?id=$id")
+                        QRCode("http://localhost:3000/?id=$id")
                             .render()
                             .writeImage(it)
                     }
