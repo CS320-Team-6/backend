@@ -42,23 +42,21 @@ fun Route.getEquipmentRoute() {
 }
 
 fun Route.addEquipmentRoute() {
-    authenticate("auth-basic") {
-        post("/equipment") {
-            val equip = call.receive<Equipment>()
-            val newEquipment = dao.addNewEquipment(
-                name = equip.name,
-                dateInstalled = equip.dateInstalled,
-                equipmentType = equip.equipmentType,
-                location = equip.location,
-                manufacturer = equip.manufacturer,
-                model = equip.model,
-                serialNumber = equip.serialNumber,
-                lastMaintenanceDate = equip.lastMaintenanceDate,
-            )
-            newEquipment?.let {
-                call.respondText("${it.id}", status = HttpStatusCode.Created)
-            } ?: call.respond(HttpStatusCode.InternalServerError)
-        }
+    post("/equipment") {
+        val equip = call.receive<Equipment>()
+        val newEquipment = dao.addNewEquipment(
+            name = equip.name,
+            dateInstalled = equip.dateInstalled,
+            equipmentType = equip.equipmentType,
+            location = equip.location,
+            manufacturer = equip.manufacturer,
+            model = equip.model,
+            serialNumber = equip.serialNumber,
+            lastMaintenanceDate = equip.lastMaintenanceDate,
+        )
+        newEquipment?.let {
+            call.respondText("${it.id}", status = HttpStatusCode.Created)
+        } ?: call.respond(HttpStatusCode.InternalServerError)
     }
 }
 

@@ -38,17 +38,15 @@ fun Route.getUserRoute() {
 }
 
 fun Route.addUserRoute() {
-    authenticate("auth-basic") {
-        post("/user") {
-            val user = call.receive<User>()
-            dao.addNewUser(
-                firstName = user.firstName,
-                lastName = user.lastName,
-                email = user.email,
-                role = user.role,
-            )
-            call.respondText("User stored correctly", status = HttpStatusCode.Created)
-        }
+    post("/user") {
+        val user = call.receive<User>()
+        dao.addNewUser(
+            firstName = user.firstName,
+            lastName = user.lastName,
+            email = user.email,
+            role = user.role,
+        )
+        call.respondText("User stored correctly", status = HttpStatusCode.Created)
     }
 }
 
