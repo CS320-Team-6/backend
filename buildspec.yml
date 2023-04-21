@@ -14,13 +14,13 @@ phases:
       - aws s3 cp s3://urepair/auths/server.jks ./
   build:
     commands:
-      - git clone https://github.com/CS320-Team-6/frontend.git
-      - cd frontend
+      # - git clone https://github.com/CS320-Team-6/frontend.git
+      # - cd frontend
       # Edit the following line to deploy new frontend version
       # - git checkout tags/0.0.1
-      - npm i && npm run build && cd ../
-      - cd src/main/resources && mkdir react-app && cd ../../../
-      - cp -r frontend/build/* src/main/resources/react-app/
+      # - npm i && npm run build && cd ../
+      # - cd src/main/resources && mkdir react-app && cd ../../../
+      # - cp -r frontend/build/* src/main/resources/react-app/
       - ./gradlew buildFatJar
   post_build:
     commands:
