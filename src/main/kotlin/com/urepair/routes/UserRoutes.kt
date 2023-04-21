@@ -50,6 +50,29 @@ fun Route.addUserRoute() {
     }
 }
 
+fun Route.editUserRoute() {
+    post("/user/{email?}") {
+        val email = call.parameters["email"] ?: return@post call.respondText(
+            "Missing id",
+            status = HttpStatusCode.BadRequest,
+        )
+        val user = call.receive<User>()
+        val editedUser = dao.editUser(
+            user.firstName,
+            user.lastName,
+            email,
+            user.role,
+        )
+        editedUser.let {
+            if (editedUser) {
+                call.respondText("User edited correctly", status = HttpStatusCode.Accepted)
+            } else {
+                call.respond(HttpStatusCode.InternalServerError)
+            }
+        }
+    }
+}
+
 fun Route.removeUserRoute() {
     authenticate("auth-basic") {
         delete("/user/{email?}") {

@@ -60,6 +60,34 @@ fun Route.addEquipmentRoute() {
     }
 }
 
+fun Route.editEquipmentRoute() {
+    post("/equipment/{id?}") {
+        val id = call.parameters["id"] ?: return@post call.respondText(
+            "Missing id",
+            status = HttpStatusCode.BadRequest,
+        )
+        val equipment = call.receive<Equipment>()
+        val editedEquipment = dao.editEquipment(
+            id.toInt(),
+            equipment.name,
+            equipment.equipmentType,
+            equipment.manufacturer,
+            equipment.model,
+            equipment.serialNumber,
+            equipment.location,
+            equipment.dateInstalled,
+            equipment.lastMaintenanceDate,
+        )
+        editedEquipment.let {
+            if (editedEquipment) {
+                call.respondText("Equipment edited correctly", status = HttpStatusCode.Accepted)
+            } else {
+                call.respond(HttpStatusCode.InternalServerError)
+            }
+        }
+    }
+}
+
 fun Route.removeEquipmentRoute() {
     authenticate("auth-basic") {
         delete("/equipment/{id?}") {
