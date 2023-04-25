@@ -11,7 +11,7 @@ phases:
       - aws s3 cp s3://urepair/auths/authentication.properties src/main/resources/
       - aws s3 cp s3://urepair/auths/dbconfig.properties src/main/resources/
       - aws s3 cp s3://urepair/auths/application.conf src/main/resources/
-      - aws s3 cp s3://urepair/auths/server.jks ./
+      - aws s3 cp s3://urepair/auths/urepair_me.jks ./
   build:
     commands:
       # - git clone https://github.com/CS320-Team-6/frontend.git
