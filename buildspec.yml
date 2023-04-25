@@ -35,6 +35,6 @@ artifacts:
     - backend-all.jar
     - .platform/**/*
     - certs/**/*
-    - server.jks
+    - urepair_me.jks
     - .ebextensions/**/*
   discard-paths: no
