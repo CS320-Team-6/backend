@@ -41,3 +41,5 @@ src/main/resources/authentication.properties
 /src/main/resources/application.conf
 server.jks
 /.ebextensions/https-instance.yml
+/urepair_me.jks
+/fetcher.js

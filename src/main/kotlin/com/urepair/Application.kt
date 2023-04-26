@@ -11,7 +11,11 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.sessions.*
+import io.ktor.util.*
 import java.util.Properties
+
+data class StaffSession(val userID: String)
 
 fun loadProperties(fileName: String): Properties {
     val properties = Properties()
@@ -22,6 +26,13 @@ fun loadProperties(fileName: String): Properties {
 }
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
+    install(Sessions) {
+        val secretSignKey = hex("6819b57a326945c1968f45236589")
+        cookie<StaffSession>("staff_session", SessionStorageMemory()) {
+            cookie.path = "/"
+            transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
+        }
+    }
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
@@ -30,6 +41,9 @@ fun Application.module() {
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Accept)
         anyHost()
+        allowHeader("staff_session")
+        exposeHeader("staff_session")
+        allowCredentials = true
     }
     install(Authentication) {
         basic("auth-basic") {

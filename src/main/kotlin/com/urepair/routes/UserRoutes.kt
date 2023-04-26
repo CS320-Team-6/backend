@@ -1,10 +1,11 @@
 package com.urepair.routes
 
+import com.urepair.StaffSession
 import com.urepair.dao.dao
 import com.urepair.models.User
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -12,7 +13,31 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.sessions.*
 
+fun Route.userLogin() {
+    authenticate("auth-basic") {
+        post("/login") {
+            val principal = call.authentication.principal<UserIdPrincipal>()
+            if (principal != null) {
+                call.sessions.set(StaffSession(principal.name))
+                call.respondText("Logged in as ${principal.name}")
+            } else {
+                call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
+            }
+        }
+
+        delete("/logout") {
+            val session = call.sessions.get<StaffSession>()
+            if (session != null) {
+                call.sessions.clear<StaffSession>()
+                call.respondText("Logged out")
+            } else {
+                call.respond(HttpStatusCode.Unauthorized, "Not logged in")
+            }
+        }
+    }
+}
 fun Route.listUsersRoute() {
     authenticate("auth-basic") {
         get("/user") {
