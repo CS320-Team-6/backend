@@ -11,8 +11,11 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.plugins.cors.routing.CORS
-import io.ktor.server.sessions.*
-import io.ktor.util.*
+import io.ktor.server.sessions.SessionStorageMemory
+import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
+import io.ktor.server.sessions.Sessions
+import io.ktor.server.sessions.cookie
+import io.ktor.util.hex
 import java.util.Properties
 
 data class StaffSession(val userID: String)
@@ -27,7 +30,7 @@ fun loadProperties(fileName: String): Properties {
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
     install(Sessions) {
-        val secretSignKey = hex("6819b57a326945c1968f45236589")
+        val secretSignKey = hex(System.getenv("STAFF_SESSION_SECRET_KEY") ?: throw IllegalStateException("STAFF_SESSION_SECRET_KEY is not set"))
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {
             cookie.path = "/"
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
