@@ -2,15 +2,15 @@ val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
 val exposedVersion: String by project
-val h2Version: String by project
 val kotlinxVersion: String by project
 val qrVersion: String by project
 val postgresqlVersion: String by project
+val bcryptVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "1.8.20"
     id("io.ktor.plugin") version "2.2.4"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
 }
 
 group = "com.urepair"
@@ -45,6 +45,8 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.github.g0dkar:qrcode-kotlin-jvm:$qrVersion")
+    implementation("at.favre.lib:bcrypt:0.10.2")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+
 }

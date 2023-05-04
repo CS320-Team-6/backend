@@ -17,6 +17,7 @@ import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
 import java.util.Properties
+import at.favre.lib.crypto.bcrypt.BCrypt
 
 data class StaffSession(val userID: String)
 
@@ -52,10 +53,11 @@ fun Application.module() {
         basic("auth-basic") {
             val authenticationProperties = loadProperties("authentication.properties")
             val username = authenticationProperties.getProperty("username")
-            val password = authenticationProperties.getProperty("password")
+            val hashedPassword = authenticationProperties.getProperty("hashedPassword")
             realm = "Access to the '/' path"
             validate { credentials ->
-                if (credentials.name == username && credentials.password == password) {
+                val passwordVerificationResult = BCrypt.verifyer().verify(credentials.password.toCharArray(), hashedPassword)
+                if (credentials.name == username && passwordVerificationResult.verified) {
                     UserIdPrincipal(credentials.name)
                 } else {
                     null
