@@ -1,5 +1,6 @@
 package com.urepair
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
@@ -16,7 +17,6 @@ import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
-import at.favre.lib.crypto.bcrypt.BCrypt
 
 data class StaffSession(val userID: String)
 
@@ -36,6 +36,7 @@ fun Application.module() {
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Accept)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
         anyHost()
         allowHeader("staff_session")
         exposeHeader("staff_session")
