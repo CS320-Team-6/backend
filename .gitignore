@@ -38,7 +38,6 @@ out/
 ### Auth Files ###
 src/main/resources/dbconfig.properties
 src/main/resources/authentication.properties
-/src/main/resources/application.conf
 server.jks
 /.ebextensions/https-instance.yml
 /urepair_me.jks

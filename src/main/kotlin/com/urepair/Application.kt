@@ -16,18 +16,10 @@ import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
-import java.util.Properties
 import at.favre.lib.crypto.bcrypt.BCrypt
 
 data class StaffSession(val userID: String)
 
-fun loadProperties(fileName: String): Properties {
-    val properties = Properties()
-    Thread.currentThread().contextClassLoader.getResourceAsStream(fileName).use { inputStream ->
-        properties.load(inputStream)
-    }
-    return properties
-}
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module() {
     install(Sessions) {
@@ -51,9 +43,8 @@ fun Application.module() {
     }
     install(Authentication) {
         basic("auth-basic") {
-            val authenticationProperties = loadProperties("authentication.properties")
-            val username = authenticationProperties.getProperty("username")
-            val hashedPassword = authenticationProperties.getProperty("hashedPassword")
+            val username = System.getenv("STAFF_UNAME")
+            val hashedPassword = System.getenv("STAFF_SECRET")
             realm = "Access to the '/' path"
             validate { credentials ->
                 val passwordVerificationResult = BCrypt.verifyer().verify(credentials.password.toCharArray(), hashedPassword)

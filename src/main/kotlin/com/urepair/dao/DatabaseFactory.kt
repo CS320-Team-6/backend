@@ -9,25 +9,15 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.Properties
 
 object DatabaseFactory {
-    private fun loadProperties(): Properties {
-        val properties = Properties()
-        val propertiesFileName = "dbconfig.properties"
-        this::class.java.classLoader.getResourceAsStream(propertiesFileName).use { inputStream ->
-            properties.load(inputStream)
-        }
-        return properties
-    }
     fun init() {
         // uncomment this section and edit dbconfig.properties to switch from local to amazon rds
-        val properties = loadProperties()
-        val rdsEndpoint = properties.getProperty("rdsEndpoint")
-        val rdsPort = properties.getProperty("rdsPort")
-        val username = properties.getProperty("username")
-        val password = properties.getProperty("password")
-        val driverClassName = properties.getProperty("driverClassName")
+        val rdsEndpoint = System.getenv("RDS_ENDPOINT")
+        val rdsPort = System.getenv("RDS_PORT")
+        val username = System.getenv("RDS_UNAME")
+        val password = System.getenv("RDS_SECRET")
+        val driverClassName = "org.postgresql.Driver"
         val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/"
         val database = Database.connect(jdbcUrl, driverClassName, user = username, password = password)
 
@@ -38,8 +28,6 @@ object DatabaseFactory {
             SchemaUtils.create(IssueCountTable)
         }
     }
-
     suspend fun <T> dbQuery(block: suspend () -> T): T =
-
         newSuspendedTransaction(Dispatchers.IO) { block() }
 }
