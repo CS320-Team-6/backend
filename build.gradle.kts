@@ -11,9 +11,9 @@ val bcryptVersion: String by project
 val awsSdkVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.8.21"
     id("io.ktor.plugin") version "2.3.0"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.21"
 }
 group = "com.urepair"
 version = "0.0.1"

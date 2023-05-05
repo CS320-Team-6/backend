@@ -11,7 +11,6 @@ fun Application.configureSerialization() {
         json(
             Json {
                 prettyPrint = true
-                isLenient = true
             },
         )
     }
