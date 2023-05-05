@@ -21,7 +21,7 @@ phases:
        - ./gradlew buildFatJar
   post_build:
     commands:
-      - mkdir .ebextensions/
+      - aws s3 cp s3://urepair/auths/https.conf .platform/nginx/conf.d/
       - aws s3 cp s3://urepair/auths/https-instance.yml .ebextensions/https-instance.config
       - aws s3 cp s3://urepair/auths/urepair_me.jks ./
       - cp build/libs/backend-all.jar ./
