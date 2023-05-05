@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
@@ -13,7 +15,6 @@ plugins {
     id("io.ktor.plugin") version "2.2.4"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
 }
-
 group = "com.urepair"
 version = "0.0.1"
 application {
@@ -28,6 +29,10 @@ repositories {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+tasks.withType(ShadowJar::class) {
+    isZip64 = true
 }
 
 dependencies {

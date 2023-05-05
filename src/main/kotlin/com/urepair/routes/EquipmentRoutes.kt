@@ -6,8 +6,7 @@ import io.github.g0dkar.qrcode.QRCode
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.http.content.files
-import io.ktor.server.http.content.static
+import io.ktor.server.http.content.staticFiles
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -102,9 +101,7 @@ fun Route.removeEquipmentRoute() {
 }
 
 fun Route.equipmentQrCode() {
-    static("/qr") {
-        files("images/qr")
-    }
+    staticFiles("/qr", File("images/qr"))
     authenticate("auth-basic") {
         get("/equipment/qr/{id?}") {
             val id = call.parameters["id"] ?: return@get call.respondText(
