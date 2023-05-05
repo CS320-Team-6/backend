@@ -12,7 +12,7 @@ val awsSdkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.8.20"
-    id("io.ktor.plugin") version "2.2.4"
+    id("io.ktor.plugin") version "2.3.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
 }
 group = "com.urepair"
@@ -55,5 +55,4 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk:$awsSdkVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
-
 }
