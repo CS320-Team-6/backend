@@ -27,5 +27,7 @@ phases:
 artifacts:
   files:
     - backend-all.jar
+    - .platform/**/*
     - urepair_me.jks
+    - .ebextensions/**/*
   discard-paths: no
