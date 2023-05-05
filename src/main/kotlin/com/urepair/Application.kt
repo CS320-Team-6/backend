@@ -39,7 +39,7 @@ fun Application.module() {
     }
     install(RateLimit) {
         global {
-            rateLimiter(limit = 50, refillPeriod = 60.seconds)
+            rateLimiter(limit = 30, refillPeriod = 60.seconds)
         }
     }
     install(HSTS)
