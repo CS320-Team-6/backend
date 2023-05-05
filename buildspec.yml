@@ -23,13 +23,11 @@ phases:
     commands:
       - aws s3 cp s3://urepair/auths/https.conf .platform/nginx/conf.d/
       - aws s3 cp s3://urepair/auths/https-instance.yml .ebextensions/https-instance.config
+      - aws s3 cp s3://urepair/auths/https-instance-single.yml .ebextensions/https-instance-single.config
       - aws s3 cp s3://urepair/auths/urepair_me.jks ./
       - cp build/libs/backend-all.jar ./
 artifacts:
   files:
     - backend-all.jar
-    - .platform/**/*
-    - certs/**/*
     - urepair_me.jks
-    - .ebextensions/**/*
   discard-paths: no
