@@ -58,6 +58,7 @@ dependencies {
     implementation("io.ktor:ktor-server-hsts:$ktorVersion")
     implementation("io.ktor:ktor-http-cio:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
+    implementation("io.ktor:ktor-server-http-redirect:$ktorVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }

@@ -15,6 +15,7 @@ import io.ktor.server.auth.basic
 import io.ktor.server.auth.session
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.hsts.HSTS
+import io.ktor.server.plugins.httpsredirect.HttpsRedirect
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.response.respond
 import io.ktor.server.sessions.SessionStorageMemory
@@ -44,6 +45,10 @@ fun Application.module() {
     }
     install(HSTS) {
         maxAgeInSeconds = 15550000
+    }
+    install(HttpsRedirect) {
+        sslPort = 8443
+        permanentRedirect = true
     }
     install(CORS) {
         allowMethod(HttpMethod.Options)
