@@ -4,8 +4,6 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -42,16 +40,10 @@ fun Application.module() {
             rateLimiter(limit = 30, refillPeriod = 60.seconds)
         }
     }
-    install(HSTS)
+    install(HSTS) {
+        maxAgeInSeconds = 15550000
+    }
     install(CORS) {
-        allowMethod(HttpMethod.Options)
-        allowMethod(HttpMethod.Get)
-        allowMethod(HttpMethod.Post)
-        allowHeader(HttpHeaders.Authorization)
-        allowHeader(HttpHeaders.ContentType)
-        allowHeader(HttpHeaders.Accept)
-        allowHeader(HttpHeaders.AccessControlAllowOrigin)
-        anyHost()
         allowHeader("staff_session")
         exposeHeader("staff_session")
         allowCredentials = true
