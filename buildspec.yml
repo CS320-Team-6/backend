@@ -8,30 +8,24 @@ phases:
     commands:
       - echo "Building Ktor project"
       - ./gradlew clean
+      - aws s3 cp s3://urepair/auths/https-instance.yml .ebextensions/https-instance.config
       - aws s3 cp s3://urepair/auths/urepair_me.jks ./
+      - cd src/main/resources && mkdir react-app && cd ../../../
+      - git clone https://github.com/CS320-Team-6/frontend.git
+      - cd frontend
+      # Edit the following line to deploy new frontend version
+      - git checkout tags/0.1.2
+      - npm i
   build:
     commands:
-       - git clone https://github.com/CS320-Team-6/frontend.git
-       - cd frontend
-       # Edit the following line to deploy new frontend version
-       - git checkout tags/0.1.2
-       - npm i && npm run build && cd ../
-       - cd src/main/resources && mkdir react-app && cd ../../../
+       - npm run build && cd ../
        - cp -r frontend/build/* src/main/resources/react-app/
        - ./gradlew buildFatJar
   post_build:
     commands:
-      - mkdir -p .platform/nginx/conf.d
-      - mkdir -p .ebextensions/
-      - aws s3 cp s3://urepair/auths/https.conf .platform/nginx/conf.d/
-      - aws s3 cp s3://urepair/auths/https-instance.yml .ebextensions/https-instance.config
-      - aws s3 cp s3://urepair/auths/https-instance-single.yml .ebextensions/https-instance-single.config
       - cp build/libs/backend-all.jar ./
 artifacts:
   files:
     - backend-all.jar
-    - .platform/**/*
-    - certs/**/*
     - urepair_me.jks
-    - .ebextensions/**/*
   discard-paths: no
