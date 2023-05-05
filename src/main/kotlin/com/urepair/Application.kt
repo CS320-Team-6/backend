@@ -6,12 +6,15 @@ import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
+import io.ktor.server.auth.session
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.response.respond
 import io.ktor.server.sessions.SessionStorageMemory
 import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
@@ -51,6 +54,18 @@ fun Application.module() {
                 val passwordVerificationResult = BCrypt.verifyer().verify(credentials.password.toCharArray(), hashedPassword)
                 if (credentials.name == username && passwordVerificationResult.verified) {
                     UserIdPrincipal(credentials.name)
+                } else {
+                    null
+                }
+            }
+        }
+        session<StaffSession>("auth-session") {
+            challenge {
+                call.respond(HttpStatusCode.Unauthorized)
+            }
+            validate { session: StaffSession ->
+                if (session.userID.isNotBlank()) {
+                    UserIdPrincipal(session.userID)
                 } else {
                     null
                 }

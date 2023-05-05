@@ -47,10 +47,15 @@ fun Route.addIssueRoute() {
             resolutionDetails = issue.resolutionDetails,
             notes = issue.notes,
         )
+        val staffEmail = "staff@urepair.me"
+        val subject = "New ticket created"
+        val message = "A new ticket has been created on urepair"
+
         newIssue?.let {
             if (!dao.updateIssueCount(issue.equipmentId)) {
                 dao.addNewIssueCount(issue.equipmentId)
             }
+            // sendEmail(staffEmail, subject, message)
             call.respondText("${it.id}", status = HttpStatusCode.Created)
         } ?: call.respond(HttpStatusCode.InternalServerError)
     }
@@ -76,6 +81,11 @@ fun Route.editIssueRoute() {
         )
         editedIssue.let {
             if (editedIssue) {
+                if (issue.assignedTo != null) {
+                    val subject = "New ticket created"
+                    val message = "A new ticket has been created on urepair"
+                    // sendEmail(issue.assignedTo, subject, message)
+                }
                 call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
             } else {
                 call.respond(HttpStatusCode.InternalServerError)
@@ -85,7 +95,7 @@ fun Route.editIssueRoute() {
 }
 
 fun Route.removeIssueRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         delete("/issue/{id?}") {
             val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
             if (dao.deleteIssue(id.toInt())) {

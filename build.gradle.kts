@@ -6,6 +6,7 @@ val kotlinxVersion: String by project
 val qrVersion: String by project
 val postgresqlVersion: String by project
 val bcryptVersion: String by project
+val awsSdkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.8.20"
@@ -45,7 +46,8 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.github.g0dkar:qrcode-kotlin-jvm:$qrVersion")
-    implementation("at.favre.lib:bcrypt:0.10.2")
+    implementation("at.favre.lib:bcrypt:$bcryptVersion")
+    implementation("com.amazonaws:aws-java-sdk:$awsSdkVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
