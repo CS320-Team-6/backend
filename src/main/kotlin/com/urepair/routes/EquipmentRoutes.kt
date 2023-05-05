@@ -2,6 +2,7 @@ package com.urepair.routes
 
 import com.urepair.dao.dao
 import com.urepair.models.Equipment
+import com.urepair.utilities.sanitize
 import io.github.g0dkar.qrcode.QRCode
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -19,6 +20,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+
+private fun sanitizeEquipment(equipment: Equipment): Equipment {
+    return Equipment(
+        id = equipment.id,
+        name = sanitize(equipment.name),
+        equipmentType = sanitize(equipment.equipmentType),
+        manufacturer = sanitize(equipment.manufacturer),
+        model = sanitize(equipment.model),
+        serialNumber = sanitize(equipment.serialNumber),
+        location = sanitize(equipment.location),
+        dateInstalled = equipment.dateInstalled,
+        lastMaintenanceDate = equipment.lastMaintenanceDate,
+    )
+}
 
 fun Route.listEquipmentRoute() {
     get("/equipment") {
@@ -42,16 +57,17 @@ fun Route.getEquipmentRoute() {
 
 fun Route.addEquipmentRoute() {
     post("/equipment") {
-        val equip = call.receive<Equipment>()
+        val equipment = call.receive<Equipment>()
+        val sanitizedEquipment = sanitizeEquipment(equipment)
         val newEquipment = dao.addNewEquipment(
-            name = equip.name,
-            dateInstalled = equip.dateInstalled,
-            equipmentType = equip.equipmentType,
-            location = equip.location,
-            manufacturer = equip.manufacturer,
-            model = equip.model,
-            serialNumber = equip.serialNumber,
-            lastMaintenanceDate = equip.lastMaintenanceDate,
+            name = sanitizedEquipment.name,
+            dateInstalled = sanitizedEquipment.dateInstalled,
+            equipmentType = sanitizedEquipment.equipmentType,
+            location = sanitizedEquipment.location,
+            manufacturer = sanitizedEquipment.manufacturer,
+            model = sanitizedEquipment.model,
+            serialNumber = sanitizedEquipment.serialNumber,
+            lastMaintenanceDate = sanitizedEquipment.lastMaintenanceDate,
         )
         newEquipment?.let {
             call.respondText("${it.id}", status = HttpStatusCode.Created)
@@ -66,16 +82,17 @@ fun Route.editEquipmentRoute() {
             status = HttpStatusCode.BadRequest,
         )
         val equipment = call.receive<Equipment>()
+        val sanitizedEquipment = sanitizeEquipment(equipment)
         val editedEquipment = dao.editEquipment(
             id.toInt(),
-            equipment.name,
-            equipment.equipmentType,
-            equipment.manufacturer,
-            equipment.model,
-            equipment.serialNumber,
-            equipment.location,
-            equipment.dateInstalled,
-            equipment.lastMaintenanceDate,
+            sanitizedEquipment.name,
+            sanitizedEquipment.equipmentType,
+            sanitizedEquipment.manufacturer,
+            sanitizedEquipment.model,
+            sanitizedEquipment.serialNumber,
+            sanitizedEquipment.location,
+            sanitizedEquipment.dateInstalled,
+            sanitizedEquipment.lastMaintenanceDate,
         )
         editedEquipment.let {
             if (editedEquipment) {

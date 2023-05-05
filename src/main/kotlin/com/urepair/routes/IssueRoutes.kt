@@ -2,6 +2,7 @@ package com.urepair.routes
 
 import com.urepair.dao.dao
 import com.urepair.models.Issue
+import com.urepair.utilities.sanitize
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -36,20 +37,23 @@ fun Route.getIssueRoute() {
 fun Route.addIssueRoute() {
     post("/issue") {
         val issue = call.receive<Issue>()
+        val sanitizedDescription = sanitize(issue.description ?: "")
+        val sanitizedResolutionDetails = sanitize(issue.resolutionDetails ?: "")
+        val sanitizedNotes = sanitize(issue.notes ?: "")
         val newIssue = dao.addNewIssue(
             equipmentId = issue.equipmentId,
-            description = issue.description,
+            description = sanitizedDescription,
             status = issue.status,
             dateReported = issue.dateReported,
             priority = issue.priority,
             assignedTo = issue.assignedTo,
             dateResolved = issue.dateResolved,
-            resolutionDetails = issue.resolutionDetails,
-            notes = issue.notes,
+            resolutionDetails = sanitizedResolutionDetails,
+            notes = sanitizedNotes,
         )
-        val staffEmail = "staff@urepair.me"
-        val subject = "New ticket created"
-        val message = "A new ticket has been created on urepair"
+        // val staffEmail = "staff@urepair.me"
+        // val subject = "New ticket created"
+        // val message = "A new ticket has been created on urepair"
 
         newIssue?.let {
             if (!dao.updateIssueCount(issue.equipmentId)) {
@@ -67,25 +71,28 @@ fun Route.editIssueRoute() {
             status = HttpStatusCode.BadRequest,
         )
         val issue = call.receive<Issue>()
+        val sanitizedDescription = sanitize(issue.description ?: "")
+        val sanitizedResolutionDetails = sanitize(issue.resolutionDetails ?: "")
+        val sanitizedNotes = sanitize(issue.notes ?: "")
         val editedIssue = dao.editIssue(
             id.toInt(),
             issue.equipmentId,
             issue.status ?: Issue.Status.NEW,
             issue.dateReported,
             issue.priority,
-            issue.description,
+            sanitizedDescription,
             issue.assignedTo,
             issue.dateResolved,
-            issue.resolutionDetails,
-            issue.notes,
+            sanitizedResolutionDetails,
+            sanitizedNotes,
         )
         editedIssue.let {
             if (editedIssue) {
-                if (issue.assignedTo != null) {
-                    val subject = "New ticket created"
-                    val message = "A new ticket has been created on urepair"
-                    // sendEmail(issue.assignedTo, subject, message)
-                }
+//                if (issue.assignedTo != null) {
+//                    val subject = "New ticket created"
+//                    val message = "A new ticket has been created on urepair"
+//                    sendEmail(issue.assignedTo, subject, message)
+//                }
                 call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
             } else {
                 call.respond(HttpStatusCode.InternalServerError)

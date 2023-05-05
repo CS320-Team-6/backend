@@ -14,12 +14,15 @@ import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.auth.session
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.hsts.HSTS
+import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.response.respond
 import io.ktor.server.sessions.SessionStorageMemory
 import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
+import kotlin.time.Duration.Companion.seconds
 
 data class StaffSession(val userID: String)
 
@@ -29,9 +32,17 @@ fun Application.module() {
         val secretSignKey = hex(System.getenv("STAFF_SESSION_SECRET_KEY") ?: throw IllegalStateException("STAFF_SESSION_SECRET_KEY is not set"))
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {
             cookie.path = "/"
+            cookie.secure = true
+            cookie.httpOnly = true
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
         }
     }
+    install(RateLimit) {
+        global {
+            rateLimiter(limit = 5, refillPeriod = 60.seconds)
+        }
+    }
+    install(HSTS)
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)

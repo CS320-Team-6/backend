@@ -3,6 +3,7 @@ package com.urepair.routes
 import com.urepair.StaffSession
 import com.urepair.dao.dao
 import com.urepair.models.User
+import com.urepair.utilities.sanitize
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.UserIdPrincipal
@@ -19,6 +20,11 @@ import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+
+private fun isValidEmail(email: String): Boolean {
+    val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$".toRegex()
+    return emailRegex.matches(email)
+}
 
 fun Route.userLogin() {
     authenticate("auth-basic") {
@@ -70,13 +76,21 @@ fun Route.getUserRoute() {
 fun Route.addUserRoute() {
     post("/user") {
         val user = call.receive<User>()
-        dao.addNewUser(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            email = user.email,
-            role = user.role,
-        )
-        call.respondText("User stored correctly", status = HttpStatusCode.Created)
+        val sanitizedFirstName = sanitize(user.firstName)
+        val sanitizedLastName = sanitize(user.lastName)
+        val sanitizedEmail = sanitize(user.email)
+
+        if (isValidEmail(sanitizedEmail)) {
+            dao.addNewUser(
+                firstName = sanitizedFirstName,
+                lastName = sanitizedLastName,
+                email = sanitizedEmail,
+                role = user.role,
+            )
+            call.respondText("User stored correctly", status = HttpStatusCode.Created)
+        } else {
+            call.respondText("Invalid email address", status = HttpStatusCode.BadRequest)
+        }
     }
 }
 
@@ -87,6 +101,7 @@ fun Route.editUserRoute() {
             status = HttpStatusCode.BadRequest,
         )
         val user = call.receive<User>()
+
         val editedUser = dao.editUser(
             user.firstName,
             user.lastName,
