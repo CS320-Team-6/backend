@@ -4,6 +4,7 @@ import com.urepair.models.EquipmentTable
 import com.urepair.models.IssueCountTable
 import com.urepair.models.IssueTable
 import com.urepair.models.UserTable
+import com.urepair.secrets.getRdsSecret
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -12,11 +13,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
     fun init() {
-        // uncomment this section and edit dbconfig.properties to switch from local to amazon rds
-        val rdsEndpoint = System.getenv("RDS_ENDPOINT")
-        val rdsPort = System.getenv("RDS_PORT")
-        val username = System.getenv("RDS_UNAME")
-        val password = System.getenv("RDS_SECRET")
+        val awsSecret = getRdsSecret("urepair/rds")
+        val rdsEndpoint = awsSecret.rdsEndpoint
+        val rdsPort = awsSecret.rdsPort
+        val username = awsSecret.rdsUsername
+        val password = awsSecret.rdsSecret
         val driverClassName = "org.postgresql.Driver"
         val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/"
         val database = Database.connect(jdbcUrl, driverClassName, user = username, password = password)

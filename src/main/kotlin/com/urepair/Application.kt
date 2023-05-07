@@ -4,9 +4,9 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
-import com.urepair.utilities.getSecret
-import com.urepair.utilities.getStaffSecret
-import com.urepair.utilities.getStaffSessionSecret
+import com.urepair.secrets.getSecret
+import com.urepair.secrets.getStaffSecret
+import com.urepair.secrets.getStaffSessionSecret
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -68,7 +68,7 @@ fun main() {
 
 fun Application.module() {
     install(Sessions) {
-        val awsSecret = getStaffSessionSecret("urepair/staffLogin")
+        val awsSecret = getStaffSessionSecret("urepair/staffSession")
         val sessionSecret = awsSecret.staffSessionSecret
         val secretSignKey = hex(sessionSecret)
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {

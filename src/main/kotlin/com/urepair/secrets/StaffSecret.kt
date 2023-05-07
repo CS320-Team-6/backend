@@ -1,4 +1,4 @@
-package com.urepair.utilities
+package com.urepair.secrets
 
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest
