@@ -56,7 +56,7 @@ fun Route.addIssueRoute() {
         val staffEmail = "staff@urepair.me"
         val subject = "New ticket created"
         val message = "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
-                "A description of the issue: ${issue.description}"
+            "A description of the issue: ${issue.description}"
 
         newIssue?.let {
             if (!dao.updateIssueCount(issue.equipmentId)) {
@@ -95,7 +95,7 @@ fun Route.editIssueRoute() {
                     val equipmentName = dao.equipment(issue.equipmentId)?.name
                     val subject = "New ticket created for $equipmentName"
                     val message = "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
-                            "A description of the issue: ${issue.description}"
+                        "A description of the issue: ${issue.description}"
                     sendEmail(issue.assignedTo, subject, message)
                 }
                 call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)

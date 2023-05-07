@@ -1,5 +1,6 @@
 package me.urepair.routes
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.UserIdPrincipal
@@ -19,6 +20,8 @@ import io.ktor.server.sessions.set
 import me.urepair.StaffSession
 import me.urepair.dao.dao
 import me.urepair.models.User
+import me.urepair.secrets.StaffSecret
+import me.urepair.secrets.updateStaffSecret
 import me.urepair.utilities.sanitize
 
 private fun isValidEmail(email: String): Boolean {
@@ -46,6 +49,21 @@ fun Route.userLogin() {
             } else {
                 call.respond(HttpStatusCode.Unauthorized, "Not logged in")
             }
+        }
+    }
+}
+fun Route.updateLogin() {
+    authenticate("auth-session") {
+        post("/login/update") {
+            val input = call.receive<StaffSecret>()
+
+            if (input.staffSecret.isBlank()) {
+                call.respond(HttpStatusCode.BadRequest, "No password")
+            }
+            val hashedPassword = BCrypt.withDefaults().hashToString(10, input.staffSecret.toCharArray())
+            val newStaffSecret = StaffSecret(hashedPassword, input.staffEmail)
+            updateStaffSecret("urepair/staffLogin", newStaffSecret)
+            call.respondText("Success")
         }
     }
 }

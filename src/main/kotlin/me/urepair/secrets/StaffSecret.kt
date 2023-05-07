@@ -2,8 +2,10 @@ package me.urepair.secrets
 
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest
+import com.amazonaws.services.secretsmanager.model.PutSecretValueRequest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
@@ -15,4 +17,14 @@ fun getStaffSecret(secretName: String): StaffSecret {
     val getSecretValueResult = client.getSecretValue(getSecretValueRequest)
     val secretValue = getSecretValueResult.secretString
     return Json.decodeFromString(secretValue)
+}
+
+fun updateStaffSecret(secretName: String, newSecret: StaffSecret) {
+    val client = AWSSecretsManagerClientBuilder.defaultClient()
+    val jsonSecret = Json.encodeToString(newSecret)
+    val putSecretValueRequest = PutSecretValueRequest().apply {
+        secretId = secretName
+        secretString = jsonSecret
+    }
+    client.putSecretValue(putSecretValueRequest)
 }

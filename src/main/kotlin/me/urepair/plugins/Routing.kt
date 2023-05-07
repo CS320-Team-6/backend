@@ -24,6 +24,7 @@ import me.urepair.routes.removeEquipmentRoute
 import me.urepair.routes.removeIssueCountRoute
 import me.urepair.routes.removeIssueRoute
 import me.urepair.routes.removeUserRoute
+import me.urepair.routes.updateLogin
 import me.urepair.routes.userLogin
 
 fun Application.configureRouting() {
@@ -47,6 +48,7 @@ fun Application.configureRouting() {
         removeIssueRoute()
 
         userLogin()
+        updateLogin()
         listUsersRoute()
         getUserRoute()
         addUserRoute()
