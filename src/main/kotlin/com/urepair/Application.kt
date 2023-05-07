@@ -31,17 +31,14 @@ import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
-import kotlinx.serialization.json.jsonPrimitive
-import org.slf4j.LoggerFactory
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
 data class StaffSession(val userID: String)
-
 fun main() {
     val awsSecret = getSecret("urepair/jks")
-    val keyStorePassword = awsSecret["KEY_STORE_PASSWORD"]?.jsonPrimitive.toString()
-    val keyStoreAlias = awsSecret["KEY_STORE_ALIAS"]?.jsonPrimitive.toString()
+    val keyStorePassword = awsSecret.KEY_STORE_PASSWORD
+    val keyStoreAlias = awsSecret.KEY_STORE_ALIAS
     val keyStoreFile = File("urepair_me.jks")
     val keyStore = buildKeyStore {
         certificate(keyStoreAlias) {
@@ -49,24 +46,21 @@ fun main() {
         }
     }
     keyStore.saveToFile(keyStoreFile, keyStorePassword)
-
     val environment = applicationEngineEnvironment {
-        log = LoggerFactory.getLogger("ktor.application")
         connector {
             port = System.getenv("PORT")?.toInt() ?: 5000
         }
         sslConnector(
             keyStore = keyStore,
-            keyAlias = System.getenv("KEY_STORE_ALIAS"),
+            keyAlias = keyStoreAlias,
             keyStorePassword = { keyStorePassword.toCharArray() },
             privateKeyPassword = { keyStorePassword.toCharArray() },
         ) {
             port = 8433
             keyStorePath = keyStoreFile
         }
-        module(Application::module) // Update this line to use the appropriate module
+        module(Application::module)
     }
-
     embeddedServer(Netty, environment).start(wait = true)
 }
 
