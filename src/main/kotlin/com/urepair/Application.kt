@@ -42,11 +42,15 @@ fun configureSSLFromSecrets(secretPath: String): HoconApplicationConfig {
 
     val sslConfig = ConfigFactory.parseString(
         """
-        ktor.security.ssl {
-            keyStore = urepair_me.jks
-            keyAlias = $keyStoreAlias
-            keyStorePassword = $keyStorePassword
-            privateKeyPassword = $keyStorePassword
+        ktor {
+            deployment {
+                sslConnector {
+                    keyStore = urepair_me.jks
+                    keyAlias = $keyStoreAlias
+                    keyStorePassword = $keyStorePassword
+                    privateKeyPassword = $keyStorePassword
+                }
+            }
         }
         """.trimIndent(),
     )
@@ -62,6 +66,7 @@ fun main(args: Array<String>) {
         this.module(Application::module)
         this.log = commandLineEnvironment(args).log
     }
+
     embeddedServer(Netty, environment = customEnvironment).start(wait = true)
 }
 
