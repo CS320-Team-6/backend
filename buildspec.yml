@@ -7,7 +7,8 @@ phases:
   pre_build:
     commands:
       - echo "Building Ktor project"
-      - aws s3 cp s3://urepair/auths/https-instance.yml .ebextensions/https-instance.config
+      - SECRET_VALUE=$(aws secretsmanager get-secret-value --secret-id urepair/httpsInstance --query SecretString --output text)
+      - echo "$SECRET_VALUE" > .ebextensions/https-instance.config
       - aws s3 cp s3://urepair/auths/https-instance-single.yml .ebextensions/https-instance-single.config
       - aws s3 cp s3://urepair/auths/urepair_me.jks ./
       - cd src/main/resources && mkdir react-app && cd ../../../
