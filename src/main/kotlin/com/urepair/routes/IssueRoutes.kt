@@ -89,7 +89,7 @@ fun Route.editIssueRoute() {
         )
         editedIssue.let {
             if (editedIssue) {
-                if (issue.assignedTo != null) {
+                if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
                     val subject = "New ticket created"
                     val message = "A new ticket has been created on urepair"
                     sendEmail(issue.assignedTo, subject, message)

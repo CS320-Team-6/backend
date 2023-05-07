@@ -4,6 +4,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
+import com.urepair.utilities.getSecret
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -13,6 +14,10 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.auth.session
+import io.ktor.server.config.MapApplicationConfig
+import io.ktor.server.engine.commandLineEnvironment
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.hsts.HSTS
 import io.ktor.server.plugins.httpsredirect.HttpsRedirect
@@ -24,10 +29,22 @@ import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
 import kotlin.time.Duration.Companion.seconds
-
 data class StaffSession(val userID: String)
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>) {
+    val keyStorePassword = getSecret("KEY_STORE_SECRET")
+    val keyStoreAlias = getSecret("KEY_STORE_ALIAS")
+
+    val commandLineEnv = commandLineEnvironment(args)
+
+    (commandLineEnv.config as? MapApplicationConfig)?.apply {
+        put("ktor.security.ssl.keyStore", "urepair_me.jks")
+        put("ktor.security.ssl.keyAlias", keyStoreAlias)
+        put("ktor.security.ssl.keyStorePassword", keyStorePassword)
+        put("ktor.security.ssl.privateKeyPassword", keyStorePassword)
+    }
+    embeddedServer(Netty, environment = commandLineEnv).start(wait = true)
+}
 fun Application.module() {
     install(Sessions) {
         val secretSignKey = hex(System.getenv("STAFF_SESSION_SECRET_KEY") ?: throw IllegalStateException("STAFF_SESSION_SECRET_KEY is not set"))
