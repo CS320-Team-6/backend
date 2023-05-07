@@ -1,6 +1,7 @@
 package com.urepair
 
 import at.favre.lib.crypto.bcrypt.BCrypt
+import com.typesafe.config.ConfigFactory
 import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
@@ -14,7 +15,8 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.auth.session
-import io.ktor.server.config.MapApplicationConfig
+import io.ktor.server.config.HoconApplicationConfig
+import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.commandLineEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -33,21 +35,36 @@ import kotlin.time.Duration.Companion.seconds
 
 data class StaffSession(val userID: String)
 
-fun main(args: Array<String>) {
-    val awsSecret = getSecret("urepair/jks")
+fun configureSSLFromSecrets(secretPath: String): HoconApplicationConfig {
+    val awsSecret = getSecret(secretPath)
     val keyStorePassword = awsSecret["KEY_STORE_PASSWORD"]?.jsonPrimitive.toString()
     val keyStoreAlias = awsSecret["KEY_STORE_ALIAS"]?.jsonPrimitive.toString()
 
-    val commandLineEnv = commandLineEnvironment(args)
+    val sslConfig = ConfigFactory.parseString(
+        """
+        ktor.security.ssl {
+            keyStore = urepair_me.jks
+            keyAlias = $keyStoreAlias
+            keyStorePassword = $keyStorePassword
+            privateKeyPassword = $keyStorePassword
+        }
+        """.trimIndent(),
+    )
 
-    (commandLineEnv.config as? MapApplicationConfig)?.apply {
-        put("ktor.security.ssl.keyStore", "urepair_me.jks")
-        put("ktor.security.ssl.keyAlias", keyStoreAlias)
-        put("ktor.security.ssl.keyStorePassword", keyStorePassword)
-        put("ktor.security.ssl.privateKeyPassword", keyStorePassword)
-    }
-    embeddedServer(Netty, environment = commandLineEnv).start(wait = true)
+    val newConfig = ConfigFactory.load().withFallback(sslConfig)
+    return HoconApplicationConfig(newConfig)
 }
+
+fun main(args: Array<String>) {
+    val customConfig = configureSSLFromSecrets("urepair/jks")
+    val customEnvironment = applicationEngineEnvironment {
+        this.config = customConfig
+        this.module(Application::module)
+        this.log = commandLineEnvironment(args).log
+    }
+    embeddedServer(Netty, environment = customEnvironment).start(wait = true)
+}
+
 fun Application.module() {
     install(Sessions) {
         val secretSignKey = hex(System.getenv("STAFF_SESSION_SECRET_KEY") ?: throw IllegalStateException("STAFF_SESSION_SECRET_KEY is not set"))
