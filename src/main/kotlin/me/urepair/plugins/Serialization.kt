@@ -1,4 +1,4 @@
-package com.urepair.plugins
+package me.urepair.plugins
 
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application

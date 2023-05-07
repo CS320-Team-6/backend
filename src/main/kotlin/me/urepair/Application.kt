@@ -1,12 +1,6 @@
-package com.urepair
+package me.urepair
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import com.urepair.dao.DatabaseFactory
-import com.urepair.plugins.configureRouting
-import com.urepair.plugins.configureSerialization
-import com.urepair.secrets.getSecret
-import com.urepair.secrets.getStaffSecret
-import com.urepair.secrets.getStaffSessionSecret
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -33,6 +27,13 @@ import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
+import me.urepair.dao.DatabaseFactory
+import me.urepair.plugins.configureRouting
+import me.urepair.plugins.configureSerialization
+import me.urepair.secrets.getSecret
+import me.urepair.secrets.getStaffSecret
+import me.urepair.secrets.getStaffSessionSecret
+import org.slf4j.LoggerFactory
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
@@ -49,6 +50,7 @@ fun main() {
     }
     keyStore.saveToFile(keyStoreFile, keyStorePassword)
     val environment = applicationEngineEnvironment {
+        log = LoggerFactory.getLogger("ktor.application")
         connector {
             port = System.getenv("PORT")?.toInt() ?: 5000
         }

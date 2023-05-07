@@ -1,4 +1,4 @@
-package com.urepair.utilities
+package me.urepair.utilities
 
 import kotlinx.html.span
 import kotlinx.html.stream.createHTML

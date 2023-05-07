@@ -1,14 +1,5 @@
-package com.urepair.dao
+package me.urepair.dao
 
-import com.urepair.dao.DatabaseFactory.dbQuery
-import com.urepair.models.Equipment
-import com.urepair.models.EquipmentTable
-import com.urepair.models.Issue
-import com.urepair.models.IssueCount
-import com.urepair.models.IssueCountTable
-import com.urepair.models.IssueTable
-import com.urepair.models.User
-import com.urepair.models.UserTable
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -16,6 +7,15 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
+import me.urepair.dao.DatabaseFactory.dbQuery
+import me.urepair.models.Equipment
+import me.urepair.models.EquipmentTable
+import me.urepair.models.Issue
+import me.urepair.models.IssueCount
+import me.urepair.models.IssueCountTable
+import me.urepair.models.IssueTable
+import me.urepair.models.User
+import me.urepair.models.UserTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere

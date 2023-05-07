@@ -1,8 +1,5 @@
-package com.urepair.routes
+package me.urepair.routes
 
-import com.urepair.dao.dao
-import com.urepair.models.Equipment
-import com.urepair.utilities.sanitize
 import io.github.g0dkar.qrcode.QRCode
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -18,6 +15,9 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.urepair.dao.dao
+import me.urepair.models.Equipment
+import me.urepair.utilities.sanitize
 import java.io.File
 import java.io.FileOutputStream
 

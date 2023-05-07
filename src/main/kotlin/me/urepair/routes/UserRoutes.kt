@@ -1,9 +1,5 @@
-package com.urepair.routes
+package me.urepair.routes
 
-import com.urepair.StaffSession
-import com.urepair.dao.dao
-import com.urepair.models.User
-import com.urepair.utilities.sanitize
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.UserIdPrincipal
@@ -20,6 +16,10 @@ import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+import me.urepair.StaffSession
+import me.urepair.dao.dao
+import me.urepair.models.User
+import me.urepair.utilities.sanitize
 
 private fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$".toRegex()

@@ -1,9 +1,5 @@
-package com.urepair.routes
+package me.urepair.routes
 
-import com.urepair.dao.dao
-import com.urepair.models.Issue
-import com.urepair.utilities.sanitize
-import com.urepair.utilities.sendEmail
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -14,6 +10,10 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import me.urepair.dao.dao
+import me.urepair.models.Issue
+import me.urepair.utilities.sanitize
+import me.urepair.utilities.sendEmail
 
 fun Route.listIssuesRoute() {
     get("/issue") {
@@ -52,9 +52,11 @@ fun Route.addIssueRoute() {
             resolutionDetails = sanitizedResolutionDetails,
             notes = sanitizedNotes,
         )
+        val equipmentName = dao.equipment(issue.equipmentId)?.name
         val staffEmail = "staff@urepair.me"
         val subject = "New ticket created"
-        val message = "A new ticket has been created on urepair"
+        val message = "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
+                "A description of the issue: ${issue.description}"
 
         newIssue?.let {
             if (!dao.updateIssueCount(issue.equipmentId)) {
@@ -90,8 +92,10 @@ fun Route.editIssueRoute() {
         editedIssue.let {
             if (editedIssue) {
                 if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
-                    val subject = "New ticket created"
-                    val message = "A new ticket has been created on urepair"
+                    val equipmentName = dao.equipment(issue.equipmentId)?.name
+                    val subject = "New ticket created for $equipmentName"
+                    val message = "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
+                            "A description of the issue: ${issue.description}"
                     sendEmail(issue.assignedTo, subject, message)
                 }
                 call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)

@@ -1,4 +1,4 @@
-package com.urepair.secrets
+package me.urepair.secrets
 
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest
@@ -7,9 +7,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class StaffSecret(val staffSecret: String, val staffEmail: String)
+data class Rds(val rdsEndpoint: String, val rdsPort: Int, val rdsSecret: String, val rdsUsername: String)
 
-fun getStaffSecret(secretName: String): StaffSecret {
+fun getRdsSecret(secretName: String): Rds {
     val client = AWSSecretsManagerClientBuilder.defaultClient()
     val getSecretValueRequest = GetSecretValueRequest().withSecretId(secretName)
     val getSecretValueResult = client.getSecretValue(getSecretValueRequest)

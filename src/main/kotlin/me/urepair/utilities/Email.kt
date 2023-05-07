@@ -1,4 +1,4 @@
-package com.urepair.utilities
+package me.urepair.utilities
 
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder

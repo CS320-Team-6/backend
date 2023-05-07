@@ -1,11 +1,11 @@
-package com.urepair.dao
+package me.urepair.dao
 
-import com.urepair.models.Equipment
-import com.urepair.models.Issue
-import com.urepair.models.IssueCount
-import com.urepair.models.User
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import me.urepair.models.Equipment
+import me.urepair.models.Issue
+import me.urepair.models.IssueCount
+import me.urepair.models.User
 
 interface DAOFacade {
     suspend fun allEquipment(): List<Equipment>

@@ -1,11 +1,11 @@
-package com.urepair.dao
+package me.urepair.dao
 
-import com.urepair.models.EquipmentTable
-import com.urepair.models.IssueCountTable
-import com.urepair.models.IssueTable
-import com.urepair.models.UserTable
-import com.urepair.secrets.getRdsSecret
 import kotlinx.coroutines.Dispatchers
+import me.urepair.models.EquipmentTable
+import me.urepair.models.IssueCountTable
+import me.urepair.models.IssueTable
+import me.urepair.models.UserTable
+import me.urepair.secrets.getRdsSecret
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction

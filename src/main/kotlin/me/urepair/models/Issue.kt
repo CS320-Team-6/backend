@@ -1,4 +1,4 @@
-package com.urepair.models
+package me.urepair.models
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.serializers.LocalDateTimeComponentSerializer

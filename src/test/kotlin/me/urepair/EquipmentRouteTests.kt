@@ -1,4 +1,4 @@
-package com.urepair
+package me.urepair
 
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get

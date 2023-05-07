@@ -1,4 +1,4 @@
-package com.urepair.models
+package me.urepair.models
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
