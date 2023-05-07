@@ -7,7 +7,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class Secret(val KEY_STORE_ALIAS: String, val KEY_STORE_PASSWORD: String)
+data class Secret(val keyStoreSecret: String, val keyStoreAlias: String)
 
 fun getSecret(secretName: String): Secret {
     val client = AWSSecretsManagerClientBuilder.defaultClient()

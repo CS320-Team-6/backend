@@ -37,8 +37,8 @@ import kotlin.time.Duration.Companion.seconds
 data class StaffSession(val userID: String)
 fun main() {
     val awsSecret = getSecret("urepair/jks")
-    val keyStorePassword = awsSecret.KEY_STORE_PASSWORD
-    val keyStoreAlias = awsSecret.KEY_STORE_ALIAS
+    val keyStorePassword = awsSecret.keyStoreSecret
+    val keyStoreAlias = awsSecret.keyStoreAlias
     val keyStoreFile = File("urepair_me.jks")
     val keyStore = buildKeyStore {
         certificate(keyStoreAlias) {
