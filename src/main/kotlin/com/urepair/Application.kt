@@ -5,6 +5,8 @@ import com.urepair.dao.DatabaseFactory
 import com.urepair.plugins.configureRouting
 import com.urepair.plugins.configureSerialization
 import com.urepair.utilities.getSecret
+import com.urepair.utilities.getStaffSecret
+import com.urepair.utilities.getStaffSessionSecret
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -66,7 +68,9 @@ fun main() {
 
 fun Application.module() {
     install(Sessions) {
-        val secretSignKey = hex(System.getenv("STAFF_SESSION_SECRET_KEY") ?: throw IllegalStateException("STAFF_SESSION_SECRET_KEY is not set"))
+        val awsSecret = getStaffSessionSecret("urepair/staffLogin")
+        val sessionSecret = awsSecret.staffSessionSecret
+        val secretSignKey = hex(sessionSecret)
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {
             cookie.path = "/"
             cookie.secure = true
@@ -102,8 +106,9 @@ fun Application.module() {
     }
     install(Authentication) {
         basic("auth-basic") {
-            val username = System.getenv("STAFF_UNAME")
-            val hashedPassword = System.getenv("STAFF_SECRET")
+            val awsSecret = getStaffSecret("urepair/staffLogin")
+            val username = awsSecret.staffEmail
+            val hashedPassword = awsSecret.staffSecret
             realm = "Access to the '/' path"
             validate { credentials ->
                 val passwordVerificationResult = BCrypt.verifyer().verify(credentials.password.toCharArray(), hashedPassword)
