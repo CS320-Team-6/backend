@@ -28,12 +28,15 @@ import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.util.hex
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.time.Duration.Companion.seconds
+
 data class StaffSession(val userID: String)
 
 fun main(args: Array<String>) {
-    val keyStorePassword = getSecret("KEY_STORE_SECRET")
-    val keyStoreAlias = getSecret("KEY_STORE_ALIAS")
+    val awsSecret = getSecret("urepair/jks")
+    val keyStorePassword = awsSecret["KEY_STORE_PASSWORD"]?.jsonPrimitive.toString()
+    val keyStoreAlias = awsSecret["KEY_STORE_ALIAS"]?.jsonPrimitive.toString()
 
     val commandLineEnv = commandLineEnvironment(args)
 
