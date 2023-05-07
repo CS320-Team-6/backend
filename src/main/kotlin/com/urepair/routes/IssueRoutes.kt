@@ -3,6 +3,7 @@ package com.urepair.routes
 import com.urepair.dao.dao
 import com.urepair.models.Issue
 import com.urepair.utilities.sanitize
+import com.urepair.utilities.sendEmail
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -51,15 +52,15 @@ fun Route.addIssueRoute() {
             resolutionDetails = sanitizedResolutionDetails,
             notes = sanitizedNotes,
         )
-        // val staffEmail = "staff@urepair.me"
-        // val subject = "New ticket created"
-        // val message = "A new ticket has been created on urepair"
+        val staffEmail = "staff@urepair.me"
+        val subject = "New ticket created"
+        val message = "A new ticket has been created on urepair"
 
         newIssue?.let {
             if (!dao.updateIssueCount(issue.equipmentId)) {
                 dao.addNewIssueCount(issue.equipmentId)
             }
-            // sendEmail(staffEmail, subject, message)
+            sendEmail(staffEmail, subject, message)
             call.respondText("${it.id}", status = HttpStatusCode.Created)
         } ?: call.respond(HttpStatusCode.InternalServerError)
     }
@@ -88,11 +89,11 @@ fun Route.editIssueRoute() {
         )
         editedIssue.let {
             if (editedIssue) {
-//                if (issue.assignedTo != null) {
-//                    val subject = "New ticket created"
-//                    val message = "A new ticket has been created on urepair"
-//                    sendEmail(issue.assignedTo, subject, message)
-//                }
+                if (issue.assignedTo != null) {
+                    val subject = "New ticket created"
+                    val message = "A new ticket has been created on urepair"
+                    sendEmail(issue.assignedTo, subject, message)
+                }
                 call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
             } else {
                 call.respond(HttpStatusCode.InternalServerError)

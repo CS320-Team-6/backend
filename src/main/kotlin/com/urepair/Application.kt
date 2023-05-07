@@ -36,6 +36,7 @@ fun Application.module() {
             cookie.secure = true
             cookie.httpOnly = true
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
+            cookie.maxAgeInSeconds = 1800
         }
     }
     install(RateLimit) {
