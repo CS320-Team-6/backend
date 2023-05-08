@@ -15,7 +15,7 @@ phases:
       - git clone https://github.com/CS320-Team-6/frontend.git
       - cd frontend
       # Edit the following line to deploy new frontend version
-      - git checkout tags/0.1.2
+      - git checkout tags/0.1.3
       - npm i
       - npm run build && cd ../
       - cp -r frontend/build/* src/main/resources/react-app/
