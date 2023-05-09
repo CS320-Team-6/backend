@@ -21,10 +21,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 fun Route.listEquipmentRoute() {
-    authenticate("auth-session") {
-        get("/equipment") {
-            call.respond(mapOf("equipment_table" to dao.allEquipment()))
-        }
+    get("/equipment") {
+        call.respond(mapOf("equipment_table" to dao.allEquipment()))
     }
 }
 
