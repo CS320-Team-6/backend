@@ -90,7 +90,7 @@ fun Application.module() {
         maxAgeInSeconds = 15550000
     }
     install(HttpsRedirect) {
-        sslPort = 8433
+        sslPort = 8443
         permanentRedirect = true
     }
     install(CORS) {
