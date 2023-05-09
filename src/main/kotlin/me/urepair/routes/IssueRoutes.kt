@@ -120,7 +120,7 @@ fun Route.removeIssueRoute() {
 }
 
 fun Route.listIssuesCountRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         get("/issue/count") {
             call.respond(mapOf("issue_count_table" to dao.allIssueCounts()))
         }
@@ -162,7 +162,7 @@ fun Route.addIssueCountRoute() {
 }
 
 fun Route.removeIssueCountRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         delete("/issue/count/{equipment_id?}") {
             val equipmentId = call.parameters["equipment_id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
             if (dao.deleteIssue(equipmentId.toInt())) {

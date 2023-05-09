@@ -42,70 +42,76 @@ fun Route.listEquipmentRoute() {
 }
 
 fun Route.getEquipmentRoute() {
-    get("/equipment/{id?}") {
-        val id = call.parameters["id"] ?: return@get call.respondText(
-            "Missing id",
-            status = HttpStatusCode.BadRequest,
-        )
-        val equip = dao.equipment(id.toInt()) ?: return@get call.respondText(
-            "No equipment with id $id",
-            status = HttpStatusCode.NotFound,
-        )
-        call.respond(equip)
+    authenticate("auth-session") {
+        get("/equipment/{id?}") {
+            val id = call.parameters["id"] ?: return@get call.respondText(
+                "Missing id",
+                status = HttpStatusCode.BadRequest,
+            )
+            val equip = dao.equipment(id.toInt()) ?: return@get call.respondText(
+                "No equipment with id $id",
+                status = HttpStatusCode.NotFound,
+            )
+            call.respond(equip)
+        }
     }
 }
 
 fun Route.addEquipmentRoute() {
-    post("/equipment") {
-        val equipment = call.receive<Equipment>()
-        val sanitizedEquipment = sanitizeEquipment(equipment)
-        val newEquipment = dao.addNewEquipment(
-            name = sanitizedEquipment.name,
-            dateInstalled = sanitizedEquipment.dateInstalled,
-            equipmentType = sanitizedEquipment.equipmentType,
-            location = sanitizedEquipment.location,
-            manufacturer = sanitizedEquipment.manufacturer,
-            model = sanitizedEquipment.model,
-            serialNumber = sanitizedEquipment.serialNumber,
-            lastMaintenanceDate = sanitizedEquipment.lastMaintenanceDate,
-        )
-        newEquipment?.let {
-            call.respondText("${it.id}", status = HttpStatusCode.Created)
-        } ?: call.respond(HttpStatusCode.InternalServerError)
+    authenticate("auth-session") {
+        post("/equipment") {
+            val equipment = call.receive<Equipment>()
+            val sanitizedEquipment = sanitizeEquipment(equipment)
+            val newEquipment = dao.addNewEquipment(
+                name = sanitizedEquipment.name,
+                dateInstalled = sanitizedEquipment.dateInstalled,
+                equipmentType = sanitizedEquipment.equipmentType,
+                location = sanitizedEquipment.location,
+                manufacturer = sanitizedEquipment.manufacturer,
+                model = sanitizedEquipment.model,
+                serialNumber = sanitizedEquipment.serialNumber,
+                lastMaintenanceDate = sanitizedEquipment.lastMaintenanceDate,
+            )
+            newEquipment?.let {
+                call.respondText("${it.id}", status = HttpStatusCode.Created)
+            } ?: call.respond(HttpStatusCode.InternalServerError)
+        }
     }
 }
 
 fun Route.editEquipmentRoute() {
-    post("/equipment/{id?}") {
-        val id = call.parameters["id"] ?: return@post call.respondText(
-            "Missing id",
-            status = HttpStatusCode.BadRequest,
-        )
-        val equipment = call.receive<Equipment>()
-        val sanitizedEquipment = sanitizeEquipment(equipment)
-        val editedEquipment = dao.editEquipment(
-            id.toInt(),
-            sanitizedEquipment.name,
-            sanitizedEquipment.equipmentType,
-            sanitizedEquipment.manufacturer,
-            sanitizedEquipment.model,
-            sanitizedEquipment.serialNumber,
-            sanitizedEquipment.location,
-            sanitizedEquipment.dateInstalled,
-            sanitizedEquipment.lastMaintenanceDate,
-        )
-        editedEquipment.let {
-            if (editedEquipment) {
-                call.respondText("Equipment edited correctly", status = HttpStatusCode.Accepted)
-            } else {
-                call.respond(HttpStatusCode.InternalServerError)
+    authenticate("auth-session") {
+        post("/equipment/{id?}") {
+            val id = call.parameters["id"] ?: return@post call.respondText(
+                "Missing id",
+                status = HttpStatusCode.BadRequest,
+            )
+            val equipment = call.receive<Equipment>()
+            val sanitizedEquipment = sanitizeEquipment(equipment)
+            val editedEquipment = dao.editEquipment(
+                id.toInt(),
+                sanitizedEquipment.name,
+                sanitizedEquipment.equipmentType,
+                sanitizedEquipment.manufacturer,
+                sanitizedEquipment.model,
+                sanitizedEquipment.serialNumber,
+                sanitizedEquipment.location,
+                sanitizedEquipment.dateInstalled,
+                sanitizedEquipment.lastMaintenanceDate,
+            )
+            editedEquipment.let {
+                if (editedEquipment) {
+                    call.respondText("Equipment edited correctly", status = HttpStatusCode.Accepted)
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
     }
 }
 
 fun Route.removeEquipmentRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         delete("/equipment/{id?}") {
             val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
             if (dao.deleteEquipment(id.toInt())) {

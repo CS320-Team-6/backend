@@ -68,7 +68,7 @@ fun Route.updateLogin() {
     }
 }
 fun Route.listUsersRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         get("/user") {
             call.respond(mapOf("user_table" to dao.allUsers()))
         }
@@ -76,7 +76,7 @@ fun Route.listUsersRoute() {
 }
 
 fun Route.getUserRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         get("/user/{email?}") {
             val email = call.parameters["email"] ?: return@get call.respondText(
                 "Missing email",
@@ -92,52 +92,56 @@ fun Route.getUserRoute() {
 }
 
 fun Route.addUserRoute() {
-    post("/user") {
-        val user = call.receive<User>()
-        val sanitizedFirstName = sanitize(user.firstName)
-        val sanitizedLastName = sanitize(user.lastName)
-        val sanitizedEmail = sanitize(user.email)
+    authenticate("auth-session") {
+        post("/user") {
+            val user = call.receive<User>()
+            val sanitizedFirstName = sanitize(user.firstName)
+            val sanitizedLastName = sanitize(user.lastName)
+            val sanitizedEmail = sanitize(user.email)
 
-        if (isValidEmail(sanitizedEmail)) {
-            dao.addNewUser(
-                firstName = sanitizedFirstName,
-                lastName = sanitizedLastName,
-                email = sanitizedEmail,
-                role = user.role,
-            )
-            call.respondText("User stored correctly", status = HttpStatusCode.Created)
-        } else {
-            call.respondText("Invalid email address", status = HttpStatusCode.BadRequest)
+            if (isValidEmail(sanitizedEmail)) {
+                dao.addNewUser(
+                    firstName = sanitizedFirstName,
+                    lastName = sanitizedLastName,
+                    email = sanitizedEmail,
+                    role = user.role,
+                )
+                call.respondText("User stored correctly", status = HttpStatusCode.Created)
+            } else {
+                call.respondText("Invalid email address", status = HttpStatusCode.BadRequest)
+            }
         }
     }
 }
 
 fun Route.editUserRoute() {
-    post("/user/{email?}") {
-        val email = call.parameters["email"] ?: return@post call.respondText(
-            "Missing id",
-            status = HttpStatusCode.BadRequest,
-        )
-        val user = call.receive<User>()
+    authenticate("auth-session") {
+        post("/user/{email?}") {
+            val email = call.parameters["email"] ?: return@post call.respondText(
+                "Missing id",
+                status = HttpStatusCode.BadRequest,
+            )
+            val user = call.receive<User>()
 
-        val editedUser = dao.editUser(
-            user.firstName,
-            user.lastName,
-            email,
-            user.role,
-        )
-        editedUser.let {
-            if (editedUser) {
-                call.respondText("User edited correctly", status = HttpStatusCode.Accepted)
-            } else {
-                call.respond(HttpStatusCode.InternalServerError)
+            val editedUser = dao.editUser(
+                user.firstName,
+                user.lastName,
+                email,
+                user.role,
+            )
+            editedUser.let {
+                if (editedUser) {
+                    call.respondText("User edited correctly", status = HttpStatusCode.Accepted)
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
     }
 }
 
 fun Route.removeUserRoute() {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         delete("/user/{email?}") {
             val email = call.parameters["email"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
             if (dao.deleteUser(email)) {
