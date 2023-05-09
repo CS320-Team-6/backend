@@ -77,6 +77,7 @@ fun Application.module() {
             cookie.path = "/"
             cookie.secure = true
             cookie.httpOnly = true
+            cookie.extensions["SameSite"] = "None"
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
             cookie.maxAgeInSeconds = 1800
         }
