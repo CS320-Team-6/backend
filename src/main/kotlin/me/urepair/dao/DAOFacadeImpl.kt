@@ -2,9 +2,7 @@ package me.urepair.dao
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
 import me.urepair.dao.DatabaseFactory.dbQuery
@@ -14,16 +12,20 @@ import me.urepair.models.Issue
 import me.urepair.models.IssueCount
 import me.urepair.models.IssueCountTable
 import me.urepair.models.IssueTable
+import me.urepair.models.PasswordRequest
+import me.urepair.models.PasswordRequestTable
 import me.urepair.models.User
 import me.urepair.models.UserTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.update
+import java.time.LocalDateTime
 
 class DAOFacadeImpl : DAOFacade {
     private fun resultRowToEquipment(row: ResultRow) = Equipment(
@@ -53,7 +55,11 @@ class DAOFacadeImpl : DAOFacade {
         equipmentId = row[IssueCountTable.equipmentId],
         issueCount = row[IssueCountTable.issueCount],
     )
-
+    private fun resultRowToPasswordRequest(row: ResultRow) = PasswordRequest(
+        email = row[PasswordRequestTable.email],
+        token = row[PasswordRequestTable.token],
+        expiresAt = row[PasswordRequestTable.expiresAt].toKotlinLocalDateTime(),
+    )
     private fun resultRowToUser(row: ResultRow) = User(
         firstName = row[UserTable.firstName],
         lastName = row[UserTable.lastName],
@@ -95,11 +101,11 @@ class DAOFacadeImpl : DAOFacade {
     ) {
         it[IssueTable.equipmentId] = equipmentId
         it[IssueTable.status] = status
-        it[IssueTable.dateReported] = dateReported.toJavaLocalDateTime()
+        it[IssueTable.dateReported] = dateReported
         it[IssueTable.priority] = priority
         it[IssueTable.description] = description
         it[IssueTable.assignedTo] = assignedTo
-        it[IssueTable.dateResolved] = dateResolved?.toJavaLocalDateTime()
+        it[IssueTable.dateResolved] = dateResolved
         it[IssueTable.resolutionDetails] = resolutionDetails
         it[IssueTable.notes] = notes
     }
@@ -222,6 +228,30 @@ class DAOFacadeImpl : DAOFacade {
         IssueTable.deleteWhere { IssueTable.id eq id } > 0
     }
 
+    override suspend fun allPasswordRequest(): List<PasswordRequest> = dbQuery {
+        PasswordRequestTable.selectAll().map(::resultRowToPasswordRequest)
+    }
+
+    override suspend fun addPasswordRequest(email: String, token: String, expiresAt: LocalDateTime) = dbQuery {
+        val insertStatement = PasswordRequestTable.insert {
+            it[PasswordRequestTable.email] = email
+            it[PasswordRequestTable.token] = token
+            it[PasswordRequestTable.expiresAt] = expiresAt
+        }
+        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToPasswordRequest)
+    }
+
+    override suspend fun getPasswordRequestToken(token: String) = dbQuery {
+        PasswordRequestTable
+            .select { PasswordRequestTable.token eq token }
+            .andWhere { PasswordRequestTable.expiresAt greaterEq LocalDateTime.now() }
+            .singleOrNull()?.let(::resultRowToPasswordRequest)
+    }
+
+    override suspend fun deletePasswordRequest(email: String) = dbQuery {
+        PasswordRequestTable.deleteWhere { PasswordRequestTable.email eq email } > 0
+    }
+
     override suspend fun allUsers(): List<User> = dbQuery {
         UserTable.selectAll().map(::resultRowToUser)
     }
@@ -288,10 +318,13 @@ val dao: DAOFacade = DAOFacadeImpl().apply {
             addNewUser("john", "wordell", "jwordell@umass.edu", User.Role.valueOf("STUDENT"))
         }
         if (allIssues().isEmpty()) {
-            addNewIssue(1, Issue.Status.valueOf("NEW"), LocalDateTime(2023, 3, 5, 2, 15), Issue.Priority.valueOf("LOW"), null, "jwordell@umass.edu", null, null, null)
+            addNewIssue(1, Issue.Status.valueOf("NEW"), LocalDateTime.of(2023, 3, 5, 2, 15), Issue.Priority.valueOf("LOW"), null, "jwordell@umass.edu", null, null, null)
         }
         if (allIssueCounts().isEmpty()) {
             addNewIssueCount(1)
+        }
+        if (allPasswordRequest().isEmpty()) {
+            addPasswordRequest("token", "pass", LocalDateTime.now())
         }
     }
 }

@@ -1,6 +1,8 @@
 package me.urepair.models
 
 import kotlinx.serialization.Serializable
+import me.urepair.utilities.isValidEmail
+import me.urepair.utilities.sanitize
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
@@ -13,11 +15,31 @@ data class User(
 ) { enum class Role {
     STAFF,
     STUDENT,
-}
-    init {
-        require(email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex())) { "Invalid email address" }
+} init {
+    firstName.let {
+        require(it.length <= 255) { "First name cannot exceed 255 characters" }
+        sanitize(it)
     }
-}
+    lastName.let {
+        require(it.length <= 255) { "Last name cannot exceed 255 characters" }
+        sanitize(it)
+    }
+    email.let {
+        require(it.length <= 255) { "Email cannot exceed 255 characters" }
+        require(isValidEmail(it)) { "Invalid email address" }
+    }
+} }
+
+@Serializable
+data class Email(val email: String) { init {
+    email.let {
+        require(it.length <= 255) { "Email cannot exceed 255 characters" }
+        require(isValidEmail(it)) { "Invalid email address" }
+    }
+} }
+
+@Serializable
+data class ResetPassword(val token: String, val newPassword: String)
 
 object UserTable : Table() {
     val firstName = varchar("first_name", 255)

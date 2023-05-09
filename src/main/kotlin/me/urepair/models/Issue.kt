@@ -3,6 +3,7 @@ package me.urepair.models
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.serializers.LocalDateTimeComponentSerializer
 import kotlinx.serialization.Serializable
+import me.urepair.utilities.sanitize
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 
@@ -36,13 +37,24 @@ data class Issue(
     IN_PROGRESS,
     RESOLVED,
     CLOSED,
-}
-    init {
-        if (assignedTo != null) {
-            require(assignedTo.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex())) { "Invalid email address" }
-        }
+} init {
+    description?.let {
+        require(it.length <= 255) { "Description cannot exceed 255 characters" }
+        sanitize(it)
     }
-}
+    assignedTo?.let {
+        require(it.length <= 255) { "Assigned to cannot exceed 255 characters" }
+        sanitize(it)
+    }
+    resolutionDetails?.let {
+        require(it.length <= 255) { "Resolution details cannot exceed 255 characters" }
+        sanitize(it)
+    }
+    notes?.let {
+        require(it.length <= 255) { "Notes cannot exceed 255 characters" }
+        sanitize(it)
+    }
+} }
 object IssueCountTable : Table() {
     val equipmentId = integer("equipment_id") references EquipmentTable.id
     val issueCount = integer("issue_count")

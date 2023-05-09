@@ -30,7 +30,7 @@ import io.ktor.util.hex
 import me.urepair.dao.DatabaseFactory
 import me.urepair.plugins.configureRouting
 import me.urepair.plugins.configureSerialization
-import me.urepair.secrets.getSecret
+import me.urepair.secrets.getJksSecret
 import me.urepair.secrets.getStaffSecret
 import me.urepair.secrets.getStaffSessionSecret
 import org.slf4j.LoggerFactory
@@ -39,7 +39,7 @@ import kotlin.time.Duration.Companion.seconds
 
 data class StaffSession(val userID: String)
 fun main() {
-    val awsSecret = getSecret("urepair/jks")
+    val awsSecret = getJksSecret("urepair/jks")
     val keyStorePassword = awsSecret.keyStoreSecret
     val keyStoreAlias = awsSecret.keyStoreAlias
     val keyStoreFile = File("urepair_me.jks")
@@ -60,7 +60,7 @@ fun main() {
             keyStorePassword = { keyStorePassword.toCharArray() },
             privateKeyPassword = { keyStorePassword.toCharArray() },
         ) {
-            port = 8433
+            port = 8443
             keyStorePath = keyStoreFile
         }
         module(Application::module)

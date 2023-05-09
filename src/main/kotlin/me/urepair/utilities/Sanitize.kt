@@ -1,11 +1,5 @@
 package me.urepair.utilities
 
-import kotlinx.html.span
-import kotlinx.html.stream.createHTML
 fun sanitize(input: String): String {
-    val sanitizedHtml = createHTML().span {
-        text(input)
-    }.toString()
-    val withoutHtmlTags = sanitizedHtml.replace(Regex("<[^>]*>"), "")
-    return withoutHtmlTags.trim()
+    return input.filter { it.isLetterOrDigit() || it.isWhitespace() || it == '.' || it == ',' || it == '-' || it == '_' || it == '!' || it == '?' }
 }

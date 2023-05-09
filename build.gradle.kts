@@ -10,6 +10,7 @@ val postgresqlVersion: String by project
 val bcryptVersion: String by project
 val awsSdkVersion: String by project
 val kotlinxHtmlVersion: String by project
+val jakartaMailVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.8.21"
@@ -48,7 +49,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-network-tls-certificates:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDateTimeVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
@@ -58,6 +58,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("at.favre.lib:bcrypt:$bcryptVersion")
     implementation("com.amazonaws:aws-java-sdk:$awsSdkVersion")
+    implementation("com.sun.mail:jakarta.mail:$jakartaMailVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }

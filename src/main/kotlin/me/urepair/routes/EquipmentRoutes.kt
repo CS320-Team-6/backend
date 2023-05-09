@@ -17,27 +17,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.urepair.dao.dao
 import me.urepair.models.Equipment
-import me.urepair.utilities.sanitize
 import java.io.File
 import java.io.FileOutputStream
 
-private fun sanitizeEquipment(equipment: Equipment): Equipment {
-    return Equipment(
-        id = equipment.id,
-        name = sanitize(equipment.name),
-        equipmentType = sanitize(equipment.equipmentType),
-        manufacturer = sanitize(equipment.manufacturer),
-        model = sanitize(equipment.model),
-        serialNumber = sanitize(equipment.serialNumber),
-        location = sanitize(equipment.location),
-        dateInstalled = equipment.dateInstalled,
-        lastMaintenanceDate = equipment.lastMaintenanceDate,
-    )
-}
-
 fun Route.listEquipmentRoute() {
-    get("/equipment") {
-        call.respond(mapOf("equipment_table" to dao.allEquipment()))
+    authenticate("auth-session") {
+        get("/equipment") {
+            call.respond(mapOf("equipment_table" to dao.allEquipment()))
+        }
     }
 }
 
@@ -61,16 +48,15 @@ fun Route.addEquipmentRoute() {
     authenticate("auth-session") {
         post("/equipment") {
             val equipment = call.receive<Equipment>()
-            val sanitizedEquipment = sanitizeEquipment(equipment)
             val newEquipment = dao.addNewEquipment(
-                name = sanitizedEquipment.name,
-                dateInstalled = sanitizedEquipment.dateInstalled,
-                equipmentType = sanitizedEquipment.equipmentType,
-                location = sanitizedEquipment.location,
-                manufacturer = sanitizedEquipment.manufacturer,
-                model = sanitizedEquipment.model,
-                serialNumber = sanitizedEquipment.serialNumber,
-                lastMaintenanceDate = sanitizedEquipment.lastMaintenanceDate,
+                name = equipment.name,
+                dateInstalled = equipment.dateInstalled,
+                equipmentType = equipment.equipmentType,
+                location = equipment.location,
+                manufacturer = equipment.manufacturer,
+                model = equipment.model,
+                serialNumber = equipment.serialNumber,
+                lastMaintenanceDate = equipment.lastMaintenanceDate,
             )
             newEquipment?.let {
                 call.respondText("${it.id}", status = HttpStatusCode.Created)
@@ -87,17 +73,16 @@ fun Route.editEquipmentRoute() {
                 status = HttpStatusCode.BadRequest,
             )
             val equipment = call.receive<Equipment>()
-            val sanitizedEquipment = sanitizeEquipment(equipment)
             val editedEquipment = dao.editEquipment(
                 id.toInt(),
-                sanitizedEquipment.name,
-                sanitizedEquipment.equipmentType,
-                sanitizedEquipment.manufacturer,
-                sanitizedEquipment.model,
-                sanitizedEquipment.serialNumber,
-                sanitizedEquipment.location,
-                sanitizedEquipment.dateInstalled,
-                sanitizedEquipment.lastMaintenanceDate,
+                equipment.name,
+                equipment.equipmentType,
+                equipment.manufacturer,
+                equipment.model,
+                equipment.serialNumber,
+                equipment.location,
+                equipment.dateInstalled,
+                equipment.lastMaintenanceDate,
             )
             editedEquipment.let {
                 if (editedEquipment) {
@@ -109,7 +94,6 @@ fun Route.editEquipmentRoute() {
         }
     }
 }
-
 fun Route.removeEquipmentRoute() {
     authenticate("auth-session") {
         delete("/equipment/{id?}") {
@@ -122,10 +106,9 @@ fun Route.removeEquipmentRoute() {
         }
     }
 }
-
 fun Route.equipmentQrCode() {
     staticFiles("/qr", File("images/qr"))
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
         get("/equipment/qr/{id?}") {
             val id = call.parameters["id"] ?: return@get call.respondText(
                 "Missing id",

@@ -7,9 +7,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class Rds(val rdsEndpoint: String, val rdsPort: Int, val rdsSecret: String, val rdsUsername: String)
+data class RdsSecret(val rdsEndpoint: String, val rdsPort: Int, val rdsSecret: String, val rdsUsername: String)
 
-fun getRdsSecret(secretName: String): Rds {
+fun getRdsSecret(secretName: String): RdsSecret {
     val client = AWSSecretsManagerClientBuilder.defaultClient()
     val getSecretValueRequest = GetSecretValueRequest().withSecretId(secretName)
     val getSecretValueResult = client.getSecretValue(getSecretValueRequest)

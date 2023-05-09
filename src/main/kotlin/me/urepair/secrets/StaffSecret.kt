@@ -7,9 +7,15 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.urepair.utilities.isValidEmail
 
 @Serializable
-data class StaffSecret(val staffSecret: String, val staffEmail: String)
+data class StaffSecret(val staffSecret: String, val staffEmail: String) { init {
+    staffEmail.let {
+        require(it.length <= 255) { "Email cannot exceed 255 characters" }
+        require(isValidEmail(it)) { "Invalid email address" }
+    }
+} }
 
 fun getStaffSecret(secretName: String): StaffSecret {
     val client = AWSSecretsManagerClientBuilder.defaultClient()

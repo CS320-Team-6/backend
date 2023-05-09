@@ -1,11 +1,12 @@
 package me.urepair.dao
 
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import me.urepair.models.Equipment
 import me.urepair.models.Issue
 import me.urepair.models.IssueCount
+import me.urepair.models.PasswordRequest
 import me.urepair.models.User
+import java.time.LocalDateTime
 
 interface DAOFacade {
     suspend fun allEquipment(): List<Equipment>
@@ -59,6 +60,15 @@ interface DAOFacade {
     ): Boolean
     suspend fun deleteIssue(id: Int): Boolean
 
+    suspend fun allPasswordRequest(): List<PasswordRequest>
+
+    suspend fun addPasswordRequest(
+        email: String,
+        token: String,
+        expiresAt: LocalDateTime,
+    ): PasswordRequest?
+    suspend fun getPasswordRequestToken(token: String): PasswordRequest?
+    suspend fun deletePasswordRequest(email: String): Boolean
     suspend fun allUsers(): List<User>
     suspend fun user(email: String): User?
     suspend fun addNewUser(
