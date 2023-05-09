@@ -60,7 +60,7 @@ fun main() {
             keyStorePassword = { keyStorePassword.toCharArray() },
             privateKeyPassword = { keyStorePassword.toCharArray() },
         ) {
-            port = 8443
+            port = 8433
             keyStorePath = keyStoreFile
         }
         module(Application::module)
@@ -90,7 +90,7 @@ fun Application.module() {
         maxAgeInSeconds = 15550000
     }
     install(HttpsRedirect) {
-        sslPort = 8443
+        sslPort = 8433
         permanentRedirect = true
     }
     install(CORS) {
