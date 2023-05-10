@@ -52,7 +52,7 @@ fun Route.addIssueRoute() {
             notes = issue.notes,
         )
         val equipmentName = dao.equipment(issue.equipmentId)?.name
-        val staffEmail = "staff@urepair.me"
+        val staffEmail = "jwordell@umass.edu"
         val subject = "New ticket created"
         val message = "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
             "A description of the issue: ${issue.description}"
