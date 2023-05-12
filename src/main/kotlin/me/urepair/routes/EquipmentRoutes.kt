@@ -45,20 +45,24 @@ fun Route.getEquipmentRoute() {
 fun Route.addEquipmentRoute() {
     authenticate("auth-session") {
         post("/equipment") {
-            val equipment = call.receive<Equipment>()
-            val newEquipment = dao.addNewEquipment(
-                name = equipment.name,
-                dateInstalled = equipment.dateInstalled,
-                equipmentType = equipment.equipmentType,
-                location = equipment.location,
-                manufacturer = equipment.manufacturer,
-                model = equipment.model,
-                serialNumber = equipment.serialNumber,
-                lastMaintenanceDate = equipment.lastMaintenanceDate,
-            )
-            newEquipment?.let {
-                call.respondText("${it.id}", status = HttpStatusCode.Created)
-            } ?: call.respond(HttpStatusCode.InternalServerError)
+            try {
+                val equipment = call.receive<Equipment>()
+                val newEquipment = dao.addNewEquipment(
+                    name = equipment.name,
+                    dateInstalled = equipment.dateInstalled,
+                    equipmentType = equipment.equipmentType,
+                    location = equipment.location,
+                    manufacturer = equipment.manufacturer,
+                    model = equipment.model,
+                    serialNumber = equipment.serialNumber,
+                    lastMaintenanceDate = equipment.lastMaintenanceDate,
+                )
+                newEquipment?.let {
+                    call.respondText("${it.id}", status = HttpStatusCode.Created)
+                } ?: call.respond(HttpStatusCode.InternalServerError)
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
+            }
         }
     }
 }
@@ -70,24 +74,28 @@ fun Route.editEquipmentRoute() {
                 "Missing id",
                 status = HttpStatusCode.BadRequest,
             )
-            val equipment = call.receive<Equipment>()
-            val editedEquipment = dao.editEquipment(
-                id.toInt(),
-                equipment.name,
-                equipment.equipmentType,
-                equipment.manufacturer,
-                equipment.model,
-                equipment.serialNumber,
-                equipment.location,
-                equipment.dateInstalled,
-                equipment.lastMaintenanceDate,
-            )
-            editedEquipment.let {
-                if (editedEquipment) {
-                    call.respondText("Equipment edited correctly", status = HttpStatusCode.Accepted)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError)
+            try {
+                val equipment = call.receive<Equipment>()
+                val editedEquipment = dao.editEquipment(
+                    id.toInt(),
+                    equipment.name,
+                    equipment.equipmentType,
+                    equipment.manufacturer,
+                    equipment.model,
+                    equipment.serialNumber,
+                    equipment.location,
+                    equipment.dateInstalled,
+                    equipment.lastMaintenanceDate,
+                )
+                editedEquipment.let {
+                    if (editedEquipment) {
+                        call.respondText("Equipment edited correctly", status = HttpStatusCode.Accepted)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
                 }
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
             }
         }
     }

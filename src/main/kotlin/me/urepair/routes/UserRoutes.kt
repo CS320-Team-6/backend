@@ -50,7 +50,7 @@ fun Route.userLogin() {
                 call.sessions.clear<StaffSession>()
                 call.respondText("Logged out")
             } else {
-                call.respond(HttpStatusCode.Unauthorized, "Not logged in")
+                call.respond(HttpStatusCode.Forbidden, "Not logged in")
             }
         }
     }
@@ -58,68 +58,71 @@ fun Route.userLogin() {
 fun Route.updateLogin() {
     authenticate("auth-session") {
         post("/login/update") {
-            val input = call.receive<StaffSecret>()
-            if (input.staffSecret.isBlank()) {
-                call.respond(HttpStatusCode.BadRequest, "No password")
+            try {
+                val input = call.receive<StaffSecret>()
+                val hashedPassword = BCrypt.withDefaults().hashToString(10, input.staffSecret.toCharArray())
+                val newStaffSecret = StaffSecret(hashedPassword, input.staffEmail)
+                updateStaffSecret("urepair/staffLogin", newStaffSecret)
+                call.respondText("Success")
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
             }
-            val hashedPassword = BCrypt.withDefaults().hashToString(10, input.staffSecret.toCharArray())
-            val newStaffSecret = StaffSecret(hashedPassword, input.staffEmail)
-            updateStaffSecret("urepair/staffLogin", newStaffSecret)
-            call.respondText("Success")
         }
     }
 }
 fun Route.forgottenPassword() {
     post("/forgot-password") {
-        val input = call.receive<Email>()
-        val email = input.email
+        try {
+            val input = call.receive<Email>()
+            val email = input.email
 
-        if (email.isBlank()) {
-            call.respond(HttpStatusCode.BadRequest, "Email is required")
-            return@post
+            // Generate a unique token and store it in the database with an expiration timestamp
+            val token = UUID.randomUUID().toString()
+            val expiresAt = LocalDateTime.now().plusMinutes(15).toKotlinLocalDateTime()
+            val resetRequest = PasswordRequest(email, token, expiresAt)
+
+            val resetLink = "https://urepair.me/reset-password?token=$token"
+            if (email == getStaffSecret("urepair/staffLogin").staffEmail) {
+                dao.addPasswordRequest(
+                    resetRequest.email,
+                    resetRequest.token,
+                    resetRequest.expiresAt.toJavaLocalDateTime(),
+                )
+                sendEmail(
+                    email,
+                    "Password Reset Request",
+                    "Click the following link to reset your password: $resetLink",
+                )
+            }
+            call.respond(HttpStatusCode.OK, "A password reset link has been sent to your email")
+        } catch (e: IllegalArgumentException) {
+            call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
         }
-
-        // Generate a unique token and store it in the database with an expiration timestamp
-        val token = UUID.randomUUID().toString()
-        val expiresAt = LocalDateTime.now().plusMinutes(15).toKotlinLocalDateTime()
-        val resetRequest = PasswordRequest(email, token, expiresAt)
-
-        val resetLink = "https://urepair.me/reset-password?token=$token"
-        if (email == getStaffSecret("urepair/staffLogin").staffEmail) {
-            dao.addPasswordRequest(resetRequest.email, resetRequest.token, resetRequest.expiresAt.toJavaLocalDateTime())
-            sendEmail(email, "Password Reset Request", "Click the following link to reset your password: $resetLink")
-        }
-
-        call.respond(HttpStatusCode.OK, "A password reset link has been sent to your email")
     }
 }
 fun Route.resetPassword() {
     post("/reset-password") {
-        val input = call.receive<ResetPassword>()
+        try {
+            val input = call.receive<ResetPassword>()
+            val token = input.token
+            val newPassword = input.newPassword
 
-        val token = input.token
-        val newPassword = input.newPassword
+            val resetRequest = dao.getPasswordRequestToken(token)
+            if (resetRequest == null) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid or expired token")
+                return@post
+            }
 
-        if (token.isBlank() || newPassword.isBlank()) {
-            call.respond(HttpStatusCode.BadRequest, "Token and new password are required")
-            return@post
+            val email = resetRequest.email
+            val hashedPassword = BCrypt.withDefaults().hashToString(10, newPassword.toCharArray())
+            val newStaffSecret = StaffSecret(hashedPassword, email)
+            updateStaffSecret("urepair/staffLogin", newStaffSecret)
+
+            dao.deletePasswordRequest(token)
+            call.respond(HttpStatusCode.OK, "Password has been reset successfully")
+        } catch (e: IllegalArgumentException) {
+            call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
         }
-
-        val resetRequest = dao.getPasswordRequestToken(token)
-        if (resetRequest == null) {
-            call.respond(HttpStatusCode.BadRequest, "Invalid or expired token")
-            return@post
-        }
-
-        val email = resetRequest.email
-
-        val hashedPassword = BCrypt.withDefaults().hashToString(10, newPassword.toCharArray())
-        val newStaffSecret = StaffSecret(hashedPassword, email)
-        updateStaffSecret("urepair/staffLogin", newStaffSecret)
-
-        dao.deletePasswordRequest(token)
-
-        call.respond(HttpStatusCode.OK, "Password has been reset successfully")
     }
 }
 fun Route.listUsersRoute() {
@@ -147,19 +150,23 @@ fun Route.getUserRoute() {
 fun Route.addUserRoute() {
     authenticate("auth-session") {
         post("/user") {
-            val user = call.receive<User>()
-            val newUser = dao.addNewUser(
-                firstName = user.firstName,
-                lastName = user.lastName,
-                email = user.email,
-                role = user.role,
-            )
-            newUser.let {
-                if (newUser != null) {
-                    call.respondText("User stored correctly", status = HttpStatusCode.Created)
-                } else {
-                    call.respondText("Failed to create user", status = HttpStatusCode.InternalServerError)
+            try {
+                val user = call.receive<User>()
+                val newUser = dao.addNewUser(
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    email = user.email,
+                    role = user.role,
+                )
+                newUser.let {
+                    if (newUser != null) {
+                        call.respondText("User stored correctly", status = HttpStatusCode.Created)
+                    } else {
+                        call.respondText("Failed to create user", status = HttpStatusCode.InternalServerError)
+                    }
                 }
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
             }
         }
     }
@@ -171,20 +178,24 @@ fun Route.editUserRoute() {
                 "Missing id",
                 status = HttpStatusCode.BadRequest,
             )
-            val user = call.receive<User>()
+            try {
+                val user = call.receive<User>()
 
-            val editedUser = dao.editUser(
-                user.firstName,
-                user.lastName,
-                email,
-                user.role,
-            )
-            editedUser.let {
-                if (editedUser) {
-                    call.respondText("User edited correctly", status = HttpStatusCode.Accepted)
-                } else {
-                    call.respondText("Failed to edit user", status = HttpStatusCode.InternalServerError)
+                val editedUser = dao.editUser(
+                    user.firstName,
+                    user.lastName,
+                    email,
+                    user.role,
+                )
+                editedUser.let {
+                    if (editedUser) {
+                        call.respondText("User edited correctly", status = HttpStatusCode.Accepted)
+                    } else {
+                        call.respondText("Failed to edit user", status = HttpStatusCode.InternalServerError)
+                    }
                 }
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
             }
         }
     }

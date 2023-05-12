@@ -3,6 +3,7 @@ package me.urepair.models
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.serializers.LocalDateTimeComponentSerializer
 import kotlinx.serialization.Serializable
+import me.urepair.utilities.isValidEmail
 import me.urepair.utilities.sanitize
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
@@ -44,7 +45,7 @@ data class Issue(
     }
     assignedTo?.let {
         require(it.length <= 255) { "Assigned to cannot exceed 255 characters" }
-        sanitize(it)
+        require(isValidEmail(it)) { "Invalid email address" }
     }
     resolutionDetails?.let {
         require(it.length <= 255) { "Resolution details cannot exceed 255 characters" }

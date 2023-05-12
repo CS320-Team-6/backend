@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import me.urepair.models.EquipmentTable
 import me.urepair.models.IssueCountTable
 import me.urepair.models.IssueTable
-import me.urepair.models.UserTable
 import me.urepair.models.PasswordRequestTable
+import me.urepair.models.UserTable
 import me.urepair.secrets.getRdsSecret
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

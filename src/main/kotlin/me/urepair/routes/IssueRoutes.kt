@@ -39,31 +39,36 @@ fun Route.getIssueRoute() {
 }
 fun Route.addIssueRoute() {
     post("/issue") {
-        val issue = call.receive<Issue>()
-        val newIssue = dao.addNewIssue(
-            equipmentId = issue.equipmentId,
-            description = issue.description,
-            status = issue.status,
-            dateReported = issue.dateReported.toJavaLocalDateTime(),
-            priority = issue.priority,
-            assignedTo = issue.assignedTo,
-            dateResolved = issue.dateResolved?.toJavaLocalDateTime(),
-            resolutionDetails = issue.resolutionDetails,
-            notes = issue.notes,
-        )
-        val equipmentName = dao.equipment(issue.equipmentId)?.name
-        val staffEmail = "jwordell@umass.edu"
-        val subject = "New ticket created"
-        val message = "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
-            "A description of the issue: ${issue.description}"
+        try {
+            val issue = call.receive<Issue>()
+            val newIssue = dao.addNewIssue(
+                equipmentId = issue.equipmentId,
+                description = issue.description,
+                status = issue.status,
+                dateReported = issue.dateReported.toJavaLocalDateTime(),
+                priority = issue.priority,
+                assignedTo = issue.assignedTo,
+                dateResolved = issue.dateResolved?.toJavaLocalDateTime(),
+                resolutionDetails = issue.resolutionDetails,
+                notes = issue.notes,
+            )
+            val equipmentName = dao.equipment(issue.equipmentId)?.name
+            val staffEmail = "staff@urepair.me"
+            val subject = "New ticket created"
+            val message =
+                "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
+                    " A description of the issue: ${issue.description}"
 
-        newIssue?.let {
-            if (!dao.updateIssueCount(issue.equipmentId)) {
-                dao.addNewIssueCount(issue.equipmentId)
-            }
-            sendEmail(staffEmail, subject, message)
-            call.respondText("${it.id}", status = HttpStatusCode.Created)
-        } ?: call.respond(HttpStatusCode.InternalServerError)
+            newIssue?.let {
+                if (!dao.updateIssueCount(issue.equipmentId)) {
+                    dao.addNewIssueCount(issue.equipmentId)
+                }
+                sendEmail(staffEmail, subject, message)
+                call.respondText("${it.id}", status = HttpStatusCode.Created)
+            } ?: call.respond(HttpStatusCode.InternalServerError)
+        } catch (e: IllegalArgumentException) {
+            call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
+        }
     }
 }
 fun Route.editIssueRoute() {
@@ -73,33 +78,37 @@ fun Route.editIssueRoute() {
                 "Missing id",
                 status = HttpStatusCode.BadRequest,
             )
-            val issue = call.receive<Issue>()
-            val editedIssue = dao.editIssue(
-                id.toInt(),
-                issue.equipmentId,
-                issue.status ?: Issue.Status.NEW,
-                issue.dateReported.toJavaLocalDateTime(),
-                issue.priority,
-                issue.description,
-                issue.assignedTo,
-                issue.dateResolved?.toJavaLocalDateTime(),
-                issue.resolutionDetails,
-                issue.notes,
-            )
-            editedIssue.let {
-                if (editedIssue) {
-                    if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
-                        val equipmentName = dao.equipment(issue.equipmentId)?.name
-                        val subject = "New ticket created for $equipmentName"
-                        val message =
-                            "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
-                                "A description of the issue: ${issue.description}"
-                        sendEmail(issue.assignedTo, subject, message)
+            try {
+                val issue = call.receive<Issue>()
+                val editedIssue = dao.editIssue(
+                    id.toInt(),
+                    issue.equipmentId,
+                    issue.status ?: Issue.Status.NEW,
+                    issue.dateReported.toJavaLocalDateTime(),
+                    issue.priority,
+                    issue.description,
+                    issue.assignedTo,
+                    issue.dateResolved?.toJavaLocalDateTime(),
+                    issue.resolutionDetails,
+                    issue.notes,
+                )
+                editedIssue.let {
+                    if (editedIssue) {
+                        if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
+                            val equipmentName = dao.equipment(issue.equipmentId)?.name
+                            val subject = "New ticket created for $equipmentName"
+                            val message =
+                                "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
+                                    " A description of the issue: ${issue.description}"
+                            sendEmail(issue.assignedTo, subject, message)
+                        }
+                        call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
+                    } else {
+                        call.respond(HttpStatusCode.InternalServerError)
                     }
-                    call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError)
                 }
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
             }
         }
     }
