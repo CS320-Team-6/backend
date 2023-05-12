@@ -82,7 +82,7 @@ fun Route.forgottenPassword() {
             val expiresAt = LocalDateTime.now().plusMinutes(15).toKotlinLocalDateTime()
             val resetRequest = PasswordRequest(email, token, expiresAt)
 
-            val resetLink = "https://urepair.me/reset-password?token=$token"
+            val resetLink = "https://urepair.me/?token=$token"
             if (email == getStaffSecret("urepair/staffLogin").staffEmail) {
                 dao.addPasswordRequest(
                     resetRequest.email,
