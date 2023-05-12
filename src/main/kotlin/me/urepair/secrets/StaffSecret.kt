@@ -17,9 +17,9 @@ data class StaffSecret(val staffSecret: String, val staffEmail: String) { init {
         require(isValidEmail(it)) { "Invalid email address" }
     }
     staffSecret.let {
-        require(it.length <= 70) { "Password cannot exceed 70 characters" }
-        val passwordValidationResult = validatePassword(it)
-        require(passwordValidationResult == "Valid password.") { passwordValidationResult }
+        // require(it.length <= 70) { "Password cannot exceed 70 characters" }
+        // val passwordValidationResult = validatePassword(it)
+        // require(passwordValidationResult == "Valid password.") { passwordValidationResult }
     }
 } }
 
