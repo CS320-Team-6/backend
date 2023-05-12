@@ -60,7 +60,7 @@ fun main() {
             keyStorePassword = { keyStorePassword.toCharArray() },
             privateKeyPassword = { keyStorePassword.toCharArray() },
         ) {
-            port = 8443
+            port = 8433
             keyStorePath = keyStoreFile
         }
         module(Application::module)
