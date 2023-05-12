@@ -17,7 +17,7 @@ data class PasswordRequest(
 ) { init {
     email.let {
         require(it.length <= 255) { "Email cannot exceed 255 characters" }
-        // require(isValidEmail(it)) { "Invalid email address" }
+        require(isValidEmail(it)) { "Invalid email address" }
     }
     token.let {
         require(it.length <= 255) { "Token details cannot exceed 255 characters" }

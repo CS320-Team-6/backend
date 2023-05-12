@@ -25,6 +25,7 @@ import me.urepair.models.Email
 import me.urepair.models.PasswordRequest
 import me.urepair.models.ResetPassword
 import me.urepair.models.User
+import me.urepair.secrets.HashedStaffSecret
 import me.urepair.secrets.StaffSecret
 import me.urepair.secrets.getStaffSecret
 import me.urepair.secrets.updateStaffSecret
@@ -61,7 +62,7 @@ fun Route.updateLogin() {
             try {
                 val input = call.receive<StaffSecret>()
                 val hashedPassword = BCrypt.withDefaults().hashToString(10, input.staffSecret.toCharArray())
-                val newStaffSecret = StaffSecret(hashedPassword, input.staffEmail)
+                val newStaffSecret = HashedStaffSecret(hashedPassword, input.staffEmail)
                 updateStaffSecret("urepair/staffLogin", newStaffSecret)
                 call.respondText("Success")
             } catch (e: IllegalArgumentException) {
@@ -115,7 +116,7 @@ fun Route.resetPassword() {
 
             val email = resetRequest.email
             val hashedPassword = BCrypt.withDefaults().hashToString(10, newPassword.toCharArray())
-            val newStaffSecret = StaffSecret(hashedPassword, email)
+            val newStaffSecret = HashedStaffSecret(hashedPassword, email)
             updateStaffSecret("urepair/staffLogin", newStaffSecret)
 
             dao.deletePasswordRequest(token)

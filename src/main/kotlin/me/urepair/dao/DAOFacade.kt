@@ -1,11 +1,11 @@
 package me.urepair.dao
 
-import kotlinx.datetime.LocalDate
 import me.urepair.models.Equipment
 import me.urepair.models.Issue
 import me.urepair.models.IssueCount
 import me.urepair.models.PasswordRequest
 import me.urepair.models.User
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface DAOFacade {

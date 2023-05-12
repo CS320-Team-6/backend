@@ -9,7 +9,6 @@ val qrVersion: String by project
 val postgresqlVersion: String by project
 val bcryptVersion: String by project
 val awsSdkVersion: String by project
-val kotlinxHtmlVersion: String by project
 val jakartaMailVersion: String by project
 
 plugins {
@@ -58,7 +57,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("at.favre.lib:bcrypt:$bcryptVersion")
     implementation("com.amazonaws:aws-java-sdk:$awsSdkVersion")
-    implementation("com.sun.mail:jakarta.mail:$jakartaMailVersion")
+    implementation("jakarta.mail:jakarta.mail-api:$jakartaMailVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }

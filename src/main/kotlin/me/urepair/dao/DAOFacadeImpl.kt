@@ -1,8 +1,6 @@
 package me.urepair.dao
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
 import me.urepair.dao.DatabaseFactory.dbQuery
@@ -25,6 +23,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.update
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DAOFacadeImpl : DAOFacade {
@@ -83,8 +82,8 @@ class DAOFacadeImpl : DAOFacade {
         it[EquipmentTable.model] = model
         it[EquipmentTable.serialNumber] = serialNumber
         it[EquipmentTable.location] = location
-        it[EquipmentTable.dateInstalled] = dateInstalled.toJavaLocalDate()
-        it[EquipmentTable.lastMaintenanceDate] = lastMaintenanceDate?.toJavaLocalDate()
+        it[EquipmentTable.dateInstalled] = dateInstalled
+        it[EquipmentTable.lastMaintenanceDate] = lastMaintenanceDate
     }
 
     private fun setIssueValues(
@@ -312,19 +311,19 @@ class DAOFacadeImpl : DAOFacade {
 val dao: DAOFacade = DAOFacadeImpl().apply {
     runBlocking {
         if (allEquipment().isEmpty()) {
-            addNewEquipment("name", "type", "man", "model", "serial", "loc", LocalDate(2023, 3, 19), LocalDate(2023, 3, 20))
+            addNewEquipment("name", "type", "man", "model", "serial", "loc", LocalDate.now(), LocalDate.now())
         }
         if (allUsers().isEmpty()) {
-            addNewUser("john", "wordell", "jwordell@umass.edu", User.Role.valueOf("STUDENT"))
+            addNewUser("john", "wordell", "jwordell@umass.edu", User.Role.STUDENT)
         }
         if (allIssues().isEmpty()) {
-            addNewIssue(1, Issue.Status.valueOf("NEW"), LocalDateTime.of(2023, 3, 5, 2, 15), Issue.Priority.valueOf("LOW"), null, "jwordell@umass.edu", null, null, null)
+            addNewIssue(1, Issue.Status.NEW, LocalDateTime.of(2023, 3, 5, 2, 15), Issue.Priority.LOW, null, "jwordell@umass.edu", null, null, null)
         }
         if (allIssueCounts().isEmpty()) {
             addNewIssueCount(1)
         }
         if (allPasswordRequest().isEmpty()) {
-            addPasswordRequest("token", "pass", LocalDateTime.now())
+            addPasswordRequest("staff@urepair.me", "token", LocalDateTime.now())
         }
     }
 }

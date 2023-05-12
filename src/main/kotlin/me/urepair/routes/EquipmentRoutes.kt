@@ -15,6 +15,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaLocalDate
 import me.urepair.dao.dao
 import me.urepair.models.Equipment
 import java.io.File
@@ -47,13 +48,13 @@ fun Route.addEquipmentRoute() {
                 val equipment = call.receive<Equipment>()
                 val newEquipment = dao.addNewEquipment(
                     name = equipment.name,
-                    dateInstalled = equipment.dateInstalled,
+                    dateInstalled = equipment.dateInstalled.toJavaLocalDate(),
                     equipmentType = equipment.equipmentType,
                     location = equipment.location,
                     manufacturer = equipment.manufacturer,
                     model = equipment.model,
                     serialNumber = equipment.serialNumber,
-                    lastMaintenanceDate = equipment.lastMaintenanceDate,
+                    lastMaintenanceDate = equipment.lastMaintenanceDate?.toJavaLocalDate(),
                 )
                 newEquipment?.let {
                     call.respondText("${it.id}", status = HttpStatusCode.Created)
@@ -81,8 +82,8 @@ fun Route.editEquipmentRoute() {
                     equipment.model,
                     equipment.serialNumber,
                     equipment.location,
-                    equipment.dateInstalled,
-                    equipment.lastMaintenanceDate,
+                    equipment.dateInstalled.toJavaLocalDate(),
+                    equipment.lastMaintenanceDate?.toJavaLocalDate(),
                 )
                 editedEquipment.let {
                     if (editedEquipment) {

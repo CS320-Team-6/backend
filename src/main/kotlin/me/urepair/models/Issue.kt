@@ -45,7 +45,7 @@ data class Issue(
     }
     assignedTo?.let {
         require(it.length <= 255) { "Assigned to cannot exceed 255 characters" }
-        // require(isValidEmail(it)) { "Invalid email address" }
+        require(isValidEmail(it)) { "Invalid email address" }
     }
     resolutionDetails?.let {
         require(it.length <= 255) { "Resolution details cannot exceed 255 characters" }
