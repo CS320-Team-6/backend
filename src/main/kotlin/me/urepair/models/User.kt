@@ -40,7 +40,6 @@ data class Email(val email: String) { init {
 
 @Serializable
 data class ResetPassword(val token: String, val newPassword: String)
-
 object UserTable : Table() {
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)

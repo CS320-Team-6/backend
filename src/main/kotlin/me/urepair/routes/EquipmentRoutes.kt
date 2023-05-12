@@ -25,7 +25,6 @@ fun Route.listEquipmentRoute() {
         call.respond(mapOf("equipment_table" to dao.allEquipment()))
     }
 }
-
 fun Route.getEquipmentRoute() {
     authenticate("auth-session") {
         get("/equipment/{id?}") {
@@ -41,7 +40,6 @@ fun Route.getEquipmentRoute() {
         }
     }
 }
-
 fun Route.addEquipmentRoute() {
     authenticate("auth-session") {
         post("/equipment") {
@@ -66,7 +64,6 @@ fun Route.addEquipmentRoute() {
         }
     }
 }
-
 fun Route.editEquipmentRoute() {
     authenticate("auth-session") {
         post("/equipment/{id?}") {
