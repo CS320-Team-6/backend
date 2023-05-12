@@ -20,9 +20,7 @@ object DatabaseFactory {
         val username = awsSecret.rdsUsername
         val password = awsSecret.rdsSecret
         val driverClassName = "org.postgresql.Driver"
-        // uncomment below when RDS is updated to take ssl
-        // val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/?ssl=true&sslmode=require"
-        val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/"
+        val jdbcUrl = "jdbc:postgresql://$rdsEndpoint:$rdsPort/?ssl=true&sslmode=require"
         val database = Database.connect(jdbcUrl, driverClassName, user = username, password = password)
 
         transaction(database) {
