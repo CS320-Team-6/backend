@@ -41,12 +41,12 @@ data class Email(val email: String) { init {
 
 @Serializable
 data class ResetPassword(val token: String, val newPassword: String) { init {
-    newPassword.let{
+    newPassword.let {
         require(it.length <= 70) { "Password cannot exceed 70 characters" }
         val passwordValidationResult = validatePassword(it)
         require(passwordValidationResult == "Valid password.") { passwordValidationResult }
     }
-}}
+} }
 object UserTable : Table() {
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)
