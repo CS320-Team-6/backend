@@ -17,7 +17,7 @@ phases:
       - git checkout tags/0.1.4
       - npm i
       - npm run build && cd ../
-      - cp -r frontend/build/* src/main/resources/react-app/
+      # - cp -r frontend/build/* src/main/resources/react-app/
       - ./gradlew clean
   build:
     commands:
