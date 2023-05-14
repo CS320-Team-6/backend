@@ -95,7 +95,7 @@ fun Route.forgottenPassword() {
                     "Click the following link to reset your password: $resetLink",
                 )
             }
-            call.respond(HttpStatusCode.OK, "A password reset link has been sent to your email")
+            call.respond(HttpStatusCode.OK, mapOf("message" to "A password reset link has been sent to your email"))
         } catch (e: IllegalArgumentException) {
             call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
         }
@@ -120,7 +120,7 @@ fun Route.resetPassword() {
             updateStaffSecret("urepair/staffLogin", newStaffSecret)
 
             dao.deletePasswordRequest(token)
-            call.respond(HttpStatusCode.OK, "Password has been reset successfully")
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Password has been reset successfully"))
         } catch (e: IllegalArgumentException) {
             call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid input")
         }
