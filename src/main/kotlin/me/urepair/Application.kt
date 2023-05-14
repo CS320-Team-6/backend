@@ -75,25 +75,25 @@ fun Application.module() {
         val secretSignKey = hex(sessionSecret)
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {
             cookie.path = "/"
-            cookie.secure = true
+            // cookie.secure = true
             cookie.httpOnly = true
             // cookie.extensions["SameSite"] = "lax"
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
             cookie.maxAgeInSeconds = 1800
         }
     }
-    install(RateLimit) {
-        global {
-            rateLimiter(limit = 30, refillPeriod = 60.seconds)
-        }
-    }
-    install(HSTS) {
-        maxAgeInSeconds = 15550000
-    }
-    install(HttpsRedirect) {
-        sslPort = 8443
-        permanentRedirect = true
-    }
+//    install(RateLimit) {
+//        global {
+//            rateLimiter(limit = 30, refillPeriod = 60.seconds)
+//        }
+//    }
+//    install(HSTS) {
+//        maxAgeInSeconds = 15550000
+//    }
+//    install(HttpsRedirect) {
+//        sslPort = 8443
+//        permanentRedirect = true
+//    }
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
