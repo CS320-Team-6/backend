@@ -109,11 +109,11 @@ fun Application.module() {
     }
     install(Authentication) {
         basic("auth-basic") {
-            val awsSecret = getStaffSecret("urepair/staffLogin")
-            val username = awsSecret.staffEmail
-            val hashedPassword = awsSecret.staffSecret
             realm = "Access to the '/' path"
             validate { credentials ->
+                val awsSecret = getStaffSecret("urepair/staffLogin")
+                val username = awsSecret.staffEmail
+                val hashedPassword = awsSecret.staffSecret
                 val passwordVerificationResult = BCrypt.verifyer().verify(credentials.password.toCharArray(), hashedPassword)
                 if (credentials.name == username && passwordVerificationResult.verified) {
                     UserIdPrincipal(credentials.name)
