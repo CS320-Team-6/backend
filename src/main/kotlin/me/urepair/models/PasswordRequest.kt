@@ -30,5 +30,5 @@ object PasswordRequestTable : Table() {
     val token = varchar("token", 255)
     val expiresAt = datetime("expiresAt")
 
-    override val primaryKey = PrimaryKey(email)
+    override val primaryKey = PrimaryKey(token)
 }
