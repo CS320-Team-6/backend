@@ -68,7 +68,7 @@ interface DAOFacade {
         expiresAt: LocalDateTime,
     ): PasswordRequest?
     suspend fun getPasswordRequestToken(token: String): PasswordRequest?
-    suspend fun deletePasswordRequest(email: String): Boolean
+    suspend fun deletePasswordRequest(token: String): Boolean
     suspend fun allUsers(): List<User>
     suspend fun user(email: String): User?
     suspend fun addNewUser(

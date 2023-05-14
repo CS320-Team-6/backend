@@ -247,8 +247,8 @@ class DAOFacadeImpl : DAOFacade {
             .singleOrNull()?.let(::resultRowToPasswordRequest)
     }
 
-    override suspend fun deletePasswordRequest(email: String) = dbQuery {
-        PasswordRequestTable.deleteWhere { PasswordRequestTable.email eq email } > 0
+    override suspend fun deletePasswordRequest(token: String) = dbQuery {
+        PasswordRequestTable.deleteWhere { PasswordRequestTable.token eq token } > 0
     }
 
     override suspend fun allUsers(): List<User> = dbQuery {
