@@ -75,9 +75,9 @@ fun Application.module() {
         val secretSignKey = hex(sessionSecret)
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {
             cookie.path = "/"
-            // cookie.secure = true
-            // cookie.httpOnly = true
-            cookie.extensions["SameSite"] = "lax"
+            cookie.secure = true
+            cookie.httpOnly = true
+            // cookie.extensions["SameSite"] = "lax"
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
             cookie.maxAgeInSeconds = 1800
         }
