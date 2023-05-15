@@ -178,7 +178,8 @@ fun Route.editIssueRoute() {
                         if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
                             val equipmentName = dao.equipment(issue.equipmentId)?.name
                             val subject = "New ticket created for $equipmentName"
-                            val htmlBody = buildSupportTicketEmailHtml(issue.assignedTo.substringBefore('@'), equipmentName ?: "", issue.description ?: "")
+                            val name = dao.user(issue.assignedTo)?.firstName
+                            val htmlBody = buildSupportTicketEmailHtml(name ?: "", equipmentName ?: "", issue.description ?: "")
                             sendEmail(issue.assignedTo, subject, htmlBody)
                         }
                         call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
