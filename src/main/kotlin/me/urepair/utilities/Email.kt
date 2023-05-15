@@ -1,6 +1,5 @@
 package me.urepair.utilities
 
-import com.amazonaws.regions.Regions
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
 import com.amazonaws.services.simpleemail.model.Body
 import com.amazonaws.services.simpleemail.model.Content
@@ -8,11 +7,8 @@ import com.amazonaws.services.simpleemail.model.Destination
 import com.amazonaws.services.simpleemail.model.Message
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
 
-val awsRegion = Regions.US_EAST_2
-
 fun sendEmail(to: String, subject: String, htmlBody: String) {
     val ses = AmazonSimpleEmailServiceClientBuilder.standard()
-        .withRegion(awsRegion)
         .build()
 
     val params = SendEmailRequest()
