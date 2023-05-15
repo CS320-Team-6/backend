@@ -18,9 +18,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.engine.sslConnector
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.CORS
-import io.ktor.server.plugins.hsts.HSTS
-import io.ktor.server.plugins.httpsredirect.HttpsRedirect
-import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.response.respond
 import io.ktor.server.sessions.SessionStorageMemory
 import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
@@ -35,7 +32,6 @@ import me.urepair.secrets.getStaffSecret
 import me.urepair.secrets.getStaffSessionSecret
 import org.slf4j.LoggerFactory
 import java.io.File
-import kotlin.time.Duration.Companion.seconds
 
 data class StaffSession(val userID: String)
 fun main() {

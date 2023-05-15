@@ -10,7 +10,7 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest
 
 val awsRegion = Regions.US_EAST_2
 
-fun sendEmail(to: String, subject: String, message: String) {
+fun sendEmail(to: String, subject: String, htmlBody: String) {
     val ses = AmazonSimpleEmailServiceClientBuilder.standard()
         .withRegion(awsRegion)
         .build()
@@ -19,7 +19,7 @@ fun sendEmail(to: String, subject: String, message: String) {
         .withDestination(Destination().withToAddresses(to))
         .withMessage(
             Message()
-                .withBody(Body().withText(Content().withData(message)))
+                .withBody(Body().withHtml(Content().withData(htmlBody)))
                 .withSubject(Content().withData(subject)),
         )
         .withSource("staff@urepair.me")

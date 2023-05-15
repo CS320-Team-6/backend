@@ -15,6 +15,89 @@ import me.urepair.dao.dao
 import me.urepair.models.Issue
 import me.urepair.utilities.sendEmail
 
+private fun buildSupportTicketEmailHtml(ticketMachine: String, ticketDescription: String): String {
+    return """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f4;
+        }
+        .container {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
+        }
+        .header,
+        .footer {
+          background-color: #800000;
+          color: #fff;
+          text-align: center;
+          padding: 20px;
+        }
+        .content {
+          background-color: #fff;
+          padding: 20px;
+        }
+        h1 {
+          font-size: 24px;
+          margin-bottom: 10px;
+        }
+        p {
+          font-size: 16px;
+          line-height: 1.5;
+        }
+        .footer p {
+          font-size: 14px;
+          margin: 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #800000;
+          color: #fff;
+          text-decoration: none;
+          padding: 10px 20px;
+          border-radius: 4px;
+          font-size: 16px;
+        }
+        @media only screen and (max-width: 600px) {
+          .container {
+            width: 100%;
+            padding: 10px;
+          }
+        }
+        </style>
+        </head>
+        <body>
+        <div class="container">
+          <div class="header">
+            <h1>URepair</h1>
+          </div>
+          <div class="content">
+            <h1>Support Ticket Created</h1>
+            <p>Hello Staff,</p>
+            <p>We have received a support ticket.</p>
+            <p><strong>Ticket Details:</strong></p>
+            <p>Machine: $ticketMachine</p>
+            <p>Description: $ticketDescription</p>
+            <br>
+            <p><a href="https://www.urepair.me/" class="button">View Portal</a></p>
+          </div>
+          <div class="footer">
+            <p>&copy; 2023 Urepair. All rights reserved.</p>
+          </div>
+        </div>
+        </body>
+        </html>
+    """.trimIndent()
+}
+
 fun Route.listIssuesRoute() {
     authenticate("auth-session") {
         get("/issue") {
@@ -97,10 +180,8 @@ fun Route.editIssueRoute() {
                         if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
                             val equipmentName = dao.equipment(issue.equipmentId)?.name
                             val subject = "New ticket created for $equipmentName"
-                            val message =
-                                "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
-                                    " A description of the issue: ${issue.description}"
-                            sendEmail(issue.assignedTo, subject, message)
+                            val htmlBody = buildSupportTicketEmailHtml(equipmentName ?: "", issue.description ?: "")
+                            sendEmail(issue.assignedTo, subject, htmlBody)
                         }
                         call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
                     } else {
