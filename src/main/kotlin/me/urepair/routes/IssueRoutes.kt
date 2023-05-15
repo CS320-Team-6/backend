@@ -138,15 +138,13 @@ fun Route.addIssueRoute() {
             val equipmentName = dao.equipment(issue.equipmentId)?.name
             val staffEmail = "staff@urepair.me"
             val subject = "New ticket created"
-            val message =
-                "A new ticket has been created for $equipmentName on urepair with priority ${issue.priority}." +
-                    " A description of the issue: ${issue.description}"
 
             newIssue?.let {
                 if (!dao.updateIssueCount(issue.equipmentId)) {
                     dao.addNewIssueCount(issue.equipmentId)
                 }
-                sendEmail(staffEmail, subject, message)
+                val htmlBody = buildSupportTicketEmailHtml(staffEmail.substringBefore('@'), equipmentName ?: "", issue.description ?: "")
+                sendEmail(staffEmail, subject, htmlBody)
                 call.respondText("${it.id}", status = HttpStatusCode.Created)
             } ?: call.respond(HttpStatusCode.InternalServerError)
         } catch (e: IllegalArgumentException) {
@@ -180,8 +178,8 @@ fun Route.editIssueRoute() {
                         if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
                             val equipmentName = dao.equipment(issue.equipmentId)?.name
                             val subject = "New ticket created for $equipmentName"
-                            val htmlBody = buildSupportTicketEmailHtml(issue.assignedTo, equipmentName ?: "", issue.description ?: "")
-                            sendEmail(issue.assignedTo.substringBefore('@'), subject, htmlBody)
+                            val htmlBody = buildSupportTicketEmailHtml(issue.assignedTo.substringBefore('@'), equipmentName ?: "", issue.description ?: "")
+                            sendEmail(issue.assignedTo, subject, htmlBody)
                         }
                         call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
                     } else {
