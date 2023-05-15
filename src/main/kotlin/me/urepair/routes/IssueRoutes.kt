@@ -15,7 +15,7 @@ import me.urepair.dao.dao
 import me.urepair.models.Issue
 import me.urepair.utilities.sendEmail
 
-private fun buildSupportTicketEmailHtml(ticketMachine: String, ticketDescription: String): String {
+private fun buildSupportTicketEmailHtml(user: String, ticketMachine: String, ticketDescription: String): String {
     return """
         <!DOCTYPE html>
         <html lang="en">
@@ -81,7 +81,7 @@ private fun buildSupportTicketEmailHtml(ticketMachine: String, ticketDescription
           </div>
           <div class="content">
             <h1>Support Ticket Created</h1>
-            <p>Hello Staff,</p>
+            <p>Hello $user,</p>
             <p>We have received a support ticket.</p>
             <p><strong>Ticket Details:</strong></p>
             <p>Machine: $ticketMachine</p>
@@ -180,8 +180,8 @@ fun Route.editIssueRoute() {
                         if (issue.assignedTo != null && issue.status == Issue.Status.IN_PROGRESS) {
                             val equipmentName = dao.equipment(issue.equipmentId)?.name
                             val subject = "New ticket created for $equipmentName"
-                            val htmlBody = buildSupportTicketEmailHtml(equipmentName ?: "", issue.description ?: "")
-                            sendEmail(issue.assignedTo, subject, htmlBody)
+                            val htmlBody = buildSupportTicketEmailHtml(issue.assignedTo, equipmentName ?: "", issue.description ?: "")
+                            sendEmail(issue.assignedTo.substringBefore('@'), subject, htmlBody)
                         }
                         call.respondText("Issue edited correctly", status = HttpStatusCode.Accepted)
                     } else {
