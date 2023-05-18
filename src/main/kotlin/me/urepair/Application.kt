@@ -18,6 +18,9 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.engine.sslConnector
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.hsts.HSTS
+import io.ktor.server.plugins.httpsredirect.HttpsRedirect
+import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.response.respond
 import io.ktor.server.sessions.SessionStorageMemory
 import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
@@ -32,6 +35,7 @@ import me.urepair.secrets.getStaffSecret
 import me.urepair.secrets.getStaffSessionSecret
 import org.slf4j.LoggerFactory
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 data class StaffSession(val userID: String)
 fun main() {
@@ -71,25 +75,25 @@ fun Application.module() {
         val secretSignKey = hex(sessionSecret)
         cookie<StaffSession>("staff_session", SessionStorageMemory()) {
             cookie.path = "/"
-            // cookie.secure = true
+            cookie.secure = true
             cookie.httpOnly = true
-            // cookie.extensions["SameSite"] = "lax"
+            cookie.extensions["SameSite"] = "None"
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
             cookie.maxAgeInSeconds = 1800
         }
     }
-//    install(RateLimit) {
-//        global {
-//            rateLimiter(limit = 30, refillPeriod = 60.seconds)
-//        }
-//    }
-//    install(HSTS) {
-//        maxAgeInSeconds = 15550000
-//    }
-//    install(HttpsRedirect) {
-//        sslPort = 8443
-//        permanentRedirect = true
-//    }
+    install(RateLimit) {
+        global {
+            rateLimiter(limit = 30, refillPeriod = 60.seconds)
+        }
+    }
+    install(HSTS) {
+        maxAgeInSeconds = 15550000
+    }
+    install(HttpsRedirect) {
+        sslPort = 8443
+        permanentRedirect = true
+    }
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
