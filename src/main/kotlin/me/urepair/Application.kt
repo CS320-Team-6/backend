@@ -1,8 +1,6 @@
 package me.urepair
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.network.tls.certificates.buildKeyStore
 import io.ktor.network.tls.certificates.saveToFile
@@ -17,7 +15,6 @@ import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.engine.sslConnector
 import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.hsts.HSTS
 import io.ktor.server.plugins.httpsredirect.HttpsRedirect
 import io.ktor.server.plugins.ratelimit.RateLimit
@@ -93,19 +90,6 @@ fun Application.module() {
     install(HttpsRedirect) {
         sslPort = 8443
         permanentRedirect = true
-    }
-    install(CORS) {
-        allowMethod(HttpMethod.Options)
-        allowMethod(HttpMethod.Get)
-        allowMethod(HttpMethod.Post)
-        allowHeader(HttpHeaders.Authorization)
-        allowHeader(HttpHeaders.ContentType)
-        allowHeader(HttpHeaders.Accept)
-        allowHeader(HttpHeaders.AccessControlAllowOrigin)
-        anyHost()
-        allowHeader("staff_session")
-        exposeHeader("staff_session")
-        allowCredentials = true
     }
     install(Authentication) {
         basic("auth-basic") {
